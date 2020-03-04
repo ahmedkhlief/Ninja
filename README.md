@@ -57,9 +57,13 @@ please note that compling C# depends on the `System.Management.Automation.dll` a
 Some Ninja Commands require below modules ( already exist in modules ) which you need to get updates from their repo :
 
 Invoke-Kerberoast : https://raw.githubusercontent.com/xan7r/kerberoast/master/autokerberoast.ps1
+
 Invoke-Mimikatz   : https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Invoke-Mimikatz.ps1
+
 Sharphound        : https://github.com/BloodHoundAD/BloodHound/blob/master/Ingestors/SharpHound.ps1
+
 PowerView         : https://github.com/PowerShellEmpire/PowerTools/blob/master/PowerView/powerview.ps1
+
 
 # Installation
 
