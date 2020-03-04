@@ -52,11 +52,6 @@
 * easy to add automation for any command you want.
 
 
-
-please note that compling C# depends on the `System.Management.Automation.dll` assembly with SHA1 hash a43ed886b68c6ee913da85df9ad2064f1d81c470.
-
-If you encounter any issues using Ninja, feel free to file a [bug report](https://github.com/mhaskar/Ninja/issues)!
-
 # Installation
 
 First of all make sure to download the latest version of Ninja using the following command :
@@ -65,9 +60,10 @@ First of all make sure to download the latest version of Ninja using the followi
 
 You need to setup Ninja by running install.sh script :
 
-```chmod +x ./install.sh
-   sudo ./install.sh```
+```chmod +x ./install.sh```
+```sudo ./install.sh```
 
+please note that compling C# depends on the `System.Management.Automation.dll` assembly with SHA1 hash c669667bb4d7870bc8bb65365d30071eb7fb86fe.
 
 After that you can start the Ninja server by running the following :
 
@@ -121,7 +117,7 @@ You will by greeted with the following once you run it :
  dcsync_list    do dcsync attack agains custom user list                                           
  get_groups     get all the groups user is member of                                               
  get_users      get all the users member in group                                                  
- bloodhound     run bloodhound to collect all the information about the AD                         
+ bloodhound     run bloodhound to collect all the information about the AD                 
 +------------------------------------------------------------+
 
 
