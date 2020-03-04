@@ -155,23 +155,31 @@ Please check this article about Ninja and how to use it : https://shells.systems
 
 
 # Screenshots
-
+Main Screen
 ![Ninja main screen](screenshots/main.png)
 * * * *
+Payloads
 ![Ninja Payloads](screenshots/payload.png)
 * * * *
+Agent List
 ![Ninja Agent list](screenshots/list.png)
 * * * *
+DA
 ![Ninja DA](screenshots/da.png)
 * * * *
+DA
 ![Ninja DA-groups](screenshots/groups.png)
 * * * *
+DA
 ![Ninja DA-computers](screenshots/pc.png)
 * * * *
-![Ninja DA-Shares](screenshots/share.png)
+DA
+![Ninja DA-Shares](screenshots/shares.png)
 * * * *
+Upload file
 ![Ninja Upload](screenshots/upload.png)
 * * * *
+Download File
 ![Ninja Download](screenshots/download.png)
 * * * *
 
