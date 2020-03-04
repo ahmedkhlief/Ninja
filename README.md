@@ -1,4 +1,3 @@
-
 # What is Ninja ?
 
    Ninja C2 is an Open source C2 server created by Purple Team to do stealthy computer and Active directoty enumeration without being detected by SIEM and AVs , Ninja still in beta version and when the stable version released it will contains many more stealthy techinques and anti-forensic to create a real challenge for blue team to make sure all the defenses configured correctly and they can detect sophisticated attacks.
@@ -20,7 +19,7 @@
  13) show available shares.
 
 
-  Ninja is designed to be easy to setup and to add more commands and do automation for boring tasks. you can find many short commands that a red teamer struggle to memorize and search for them.
+  Ninja is designed to be easy to setup and to add more commands and do automation for boring tasks. you can find many short commands that a red teamer struggle to memorize and search for them. please check this article to know more about ninja : https://shells.systems/introducing-ninja-c2-the-c2-built-for-stealth-red-team-operations/
 
 
   # Ninja key features
@@ -51,6 +50,16 @@
 * all the payload written to payloads folder for easy access and further customization.
 * easy to add automation for any command you want.
 
+# Requirement
+
+please note that compling C# depends on the `System.Management.Automation.dll` assembly with SHA1 hash c669667bb4d7870bc8bb65365d30071eb7fb86fe.
+
+Some Ninja Commands require below modules ( already exist in modules ) which you need to get updates from their repo :
+
+Invoke-Kerberoast : https://raw.githubusercontent.com/xan7r/kerberoast/master/autokerberoast.ps1
+Invoke-Mimikatz   : https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Invoke-Mimikatz.ps1
+Sharphound        : https://github.com/BloodHoundAD/BloodHound/blob/master/Ingestors/SharpHound.ps1
+PowerView         : https://github.com/PowerShellEmpire/PowerTools/blob/master/PowerView/powerview.ps1
 
 # Installation
 
@@ -63,7 +72,6 @@ You need to setup Ninja by running install.sh script :
 ```chmod +x ./install.sh```
 ```sudo ./install.sh```
 
-please note that compling C# depends on the `System.Management.Automation.dll` assembly with SHA1 hash c669667bb4d7870bc8bb65365d30071eb7fb86fe.
 
 After that you can start the Ninja server by running the following :
 
@@ -125,7 +133,7 @@ You will by greeted with the following once you run it :
 ```
 # Usage
 
-Please check this article about Ninja and how to use it.
+Please check this article about Ninja and how to use it : https://shells.systems/introducing-ninja-c2-the-c2-built-for-stealth-red-team-operations/.
 
 
 # Todo
