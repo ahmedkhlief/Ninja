@@ -174,9 +174,11 @@ DA
 ![Ninja DA-computers](screenshots/pc.png)
 * * * *
 DA
+
 ![Ninja DA-Shares](screenshots/shares.png)
 * * * *
 Upload file
+
 ![Ninja Upload](screenshots/upload.png)
 * * * *
 Download File
