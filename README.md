@@ -8,7 +8,7 @@
   2) Detect SIEM solutions : right now it detect SPlUNK , Log beat collector ,  sysmon.
   3) detect AV using two ways , using powershell command and using processes.
   4) check if the powershell logging enabled
-  5) check if the user have admin privileges 
+  5) check if the user have admin privileges
   6) provide information about system : host name , OS , build number , local time , time zone , last boot and bios .
   7) provide information about the installed security updates.
   8) provide a System pwn hardness score based on multiple factors.
@@ -26,7 +26,7 @@
   Ninja is packed with a number of features that allows you to gain an insight into your upcoming engagement before you actually need to deploy your full aresenal or tools and techniques, such as:
 
 
-* Defense Analysis 
+* Defense Analysis
 * automation for kerberoast attack from generating the kerberos tickets to extracting the SPN hashes into hashcat format.
 * automation for dc_sync to get hashes for a list of users or domain admin group.
 * Undetected Automation to get groups the user belong to and the users member in a group.
@@ -121,7 +121,7 @@ You will by greeted with the following once you run it :
  downloads      list downloaded files                                                              
  upload         upload files to the victim                                                         
  modules        list all the Available modules in Modules directory                                
- encode64       encode any command to base64 encoded UTF-8 command ( can be decoded in powershell) 
+ encode64       encode any command to base64 encoded UTF-8 command ( can be decoded in powershell)
  screenshot     take screenshot form  the victim                                                   
  DA             Run defense Analysis Module                                                        
  kerb           do kerberoast attack  and dump  service accounts hashes                            
@@ -144,10 +144,10 @@ Please check this article about Ninja and how to use it : https://shells.systems
 * [ ] Enhance DA module and add more SIEM , AV and sandbox detection along with more important eenumeration data.
 * [ ] more focus on stealth to load agent parts only when needed
 * [ ] add more shortend commands for popular modules
-* [ ] add more customizations and ideas for phishing using C# payloads and macros 
+* [ ] add more customizations and ideas for phishing using C# payloads and macros
 * [ ] integration with curveball exploit
 * [ ] integration with new exchange RCE
-* [ ] Undetectable Persistence 
+* [ ] Undetectable Persistence
 * [ ] create a wipe command to securly remove files on hard disk without being detected and analyzed by blue team.
 * [ ] make the agent blocks changes randomly to bypass any static detection
 * [ ] add obfuscation for the agents.
@@ -160,6 +160,8 @@ Please check this article about Ninja and how to use it : https://shells.systems
 * * * *
 ![Ninja Payloads](screenshots/payload.png)
 * * * *
+![Ninja Agent list](screenshots/list.png)
+* * * *
 ![Ninja DA](screenshots/da.png)
 * * * *
 ![Ninja DA-groups](screenshots/groups.png)
@@ -167,6 +169,10 @@ Please check this article about Ninja and how to use it : https://shells.systems
 ![Ninja DA-computers](screenshots/pc.png)
 * * * *
 ![Ninja DA-Shares](screenshots/share.png)
+* * * *
+![Ninja Upload](screenshots/upload.png)
+* * * *
+![Ninja Download](screenshots/download.png)
 * * * *
 
 # License
