@@ -77,9 +77,13 @@ You need to setup Ninja by running install.sh script :
 ```sudo ./install.sh```
 
 
-After that you can start the Ninja server by running the following :
+After that you need to initialize the campagin :
 
-`./Ninja.py`
+`python start_campaign.py`
+
+Now you can start the Ninja server  :
+
+`python Ninja.py`
 
 You will by greeted with the following once you run it :
 
