@@ -1,10 +1,14 @@
 # Embedded file name: muddyc3.py
 import signal
 import sys
+try:
+    from core import config
+except ImportError:
+    print "run : python start_campaign.py to intialize the configuration"
+    exit()
 from core import webserver
 from core import header
 from core.cmd import cmd
-from core import config
 from core.config import *
 #from core.config  import *
 from core.color import bcolors
@@ -138,4 +142,3 @@ if __name__ == '__main__':
         main()
     except Exception as e:
         print '[-] ERROR(main): %s' % str(e)
-
