@@ -8,13 +8,14 @@ def kerb(fname,user,domain):
     SPN=data[1]                       # AV data
     Tickets=data[2]                       #  process list
     kerb=data[3]
-    Hashes=data[4]
+    Hashes=kerb.split("*******")
     print "Found Service Principle Names : \n"+SPN
     print "Generated Tickets : \n"+Tickets
     print "Output of Invoke-Kerberoast : \n"+kerb
     print "Hashes saved in "+hashfile
     f=open(hashfile,"a")
-    for i in data[4:]:
-        print i.strip().replace("\n","")
-        f.write(i.strip().replace("\n",""))
+    print kerb
+    for i in Hashes[1:]:
+        i=i+"\n"
+        f.write(i+"\n")
     f.close()

