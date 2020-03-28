@@ -119,9 +119,9 @@ def main():
     config.PAYLOADS.append(payload)
     config.PAYLOADS.append(payload2)
     config.PAYLOADS.append(payload3)
-    cspayload()
     config.PAYLOAD()
     config.STAGER()
+    cspayload()
 
     print '+' + '-' * 60 + '+'
     while True:
