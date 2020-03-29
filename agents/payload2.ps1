@@ -121,7 +121,9 @@ echo $data | Set-Content $filename -Encoding Byte
       }
 
 $hostname = $env:COMPUTERNAME;
+if ((New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){ $t="*"}
 $whoami = $env:USERNAME;
+$whoami ="$t$whoami"
 $arch = (Get-WmiObject Win32_OperatingSystem).OSArchitecture
 $os = (Get-WmiObject -class Win32_OperatingSystem).Caption + "($arch)";
 $domain = (Get-WmiObject Win32_ComputerSystem).Domain;
