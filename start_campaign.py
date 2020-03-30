@@ -12,7 +12,7 @@ def initiate_url():
     f=open("links.txt")
     links=f.read()
     list_full=links.strip().replace("\r","").split("\n")#replace("\0","").replace("\n",",").split(",")
-    
+
     raw_payload='/'+random.choice(list_full)
     list_full.remove(raw_payload.replace("/",""))
     b52_payload='/'+random.choice(list_full)
@@ -75,7 +75,7 @@ def update_template():
     template=open("core/config.template","r")
     config=open("core/config.py","w")
     data=template.read()
-    data=data.replace('{IP}', IP).replace('{beacon}', beacon).replace('{PORT}', PORT).replace('{URL}', Urls)
+    data=data.replace('{IP}', IP).replace('{beacon_time}', beacon).replace('{PORT}', PORT).replace('{URL}', Urls)
     config.write(data)
     config.close()
     template.close()

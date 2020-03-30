@@ -15,7 +15,7 @@ HOST='{IP}'
 BASE = 'Ninja'
 POINTER = 'main'
 PAYLOADS = []
-beacon='{beacon}'
+beacon='{beacon_time}'
 #AESKey="+4hOi8+xxOki+Mg9Y4+GuD7g7n2eytMa5KF6zNnaPz0="
 AESKey=base64.b64encode(bytearray("".join([random.choice(string.ascii_uppercase) for i in range(32)]), "UTF-8")).decode()
 
