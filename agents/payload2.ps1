@@ -77,7 +77,7 @@ return $output
 
                         try{
 
-                  $file_content = Get-Content $filename -Encoding Byte
+                  $file_content = Get-Content -LiteralPath $filename -Encoding Byte
                   if ($file_content.Length -eq 0){
                   return $Error[0]}
                   }
