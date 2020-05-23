@@ -46,9 +46,9 @@ class PrettyTable(object):
 
     def __init__(self, field_names = None, **kwargs):
         """Return a new PrettyTable instance
-        
+
         Arguments:
-        
+
         encoding - Unicode encoding scheme used to decode any encoded input
         field_names - list or tuple of field names
         fields - list or tuple of field names to include in displays
@@ -71,7 +71,7 @@ class PrettyTable(object):
         sort_key - sorting key function, applied to data points before sorting
         valign - default valign for each row (None, "t", "m" or "b")
         reversesort - True or False to sort in descending or ascending order"""
-        self.encoding = kwargs.get('encoding', 'UTF-8')
+        self.encoding = kwargs.get('encoding', 'cp1252')
         self._field_names = []
         self._align = {}
         self._valign = {}
@@ -224,13 +224,13 @@ class PrettyTable(object):
     def _validate_field_names(self, val):
         if self._field_names:
             try:
-                assert len(val) == len(self._field_names) 
+                assert len(val) == len(self._field_names)
             except AssertionError:
                 raise Exception('Field name list has incorrect number of values, (actual) %d!=%d (expected)' % (len(val), len(self._field_names)))
 
         if self._rows:
             try:
-                assert len(val) == len(self._rows[0]) 
+                assert len(val) == len(self._rows[0])
             except AssertionError:
                 raise Exception('Field name list has incorrect number of values, (actual) %d!=%d (expected)' % (len(val), len(self._rows[0])))
 
@@ -241,7 +241,7 @@ class PrettyTable(object):
 
     def _validate_header_style(self, val):
         try:
-            assert val in ('cap', 'title', 'upper', 'lower', None) 
+            assert val in ('cap', 'title', 'upper', 'lower', None)
         except AssertionError:
             raise Exception('Invalid header style, use cap, title, upper, lower or None!')
 
@@ -249,13 +249,13 @@ class PrettyTable(object):
 
     def _validate_align(self, val):
         try:
-            assert val in ('l', 'c', 'r') 
+            assert val in ('l', 'c', 'r')
         except AssertionError:
             raise Exception('Alignment %s is invalid, use l, c or r!' % val)
 
     def _validate_valign(self, val):
         try:
-            assert val in ('t', 'm', 'b', None) 
+            assert val in ('t', 'm', 'b', None)
         except AssertionError:
             raise Exception('Alignment %s is invalid, use t, m, b or None!' % val)
 
@@ -263,13 +263,13 @@ class PrettyTable(object):
 
     def _validate_nonnegative_int(self, name, val):
         try:
-            assert int(val) >= 0 
+            assert int(val) >= 0
         except AssertionError:
             raise Exception('Invalid value for %s: %s!' % (name, self._unicode(val)))
 
     def _validate_true_or_false(self, name, val):
         try:
-            assert val in (True, False) 
+            assert val in (True, False)
         except AssertionError:
             raise Exception('Invalid value for %s!  Must be True or False.' % name)
 
@@ -277,7 +277,7 @@ class PrettyTable(object):
         if val == '':
             return
         try:
-            assert type(val) in (str, unicode) 
+            assert type(val) in (str, unicode)
             assert val.isdigit()
         except AssertionError:
             raise Exception('Invalid value for %s!  Must be an integer format string.' % name)
@@ -286,18 +286,18 @@ class PrettyTable(object):
         if val == '':
             return
         try:
-            assert type(val) in (str, unicode) 
-            assert '.' in val 
+            assert type(val) in (str, unicode)
+            assert '.' in val
             bits = val.split('.')
-            assert len(bits) <= 2 
-            assert bits[0] == '' or bits[0].isdigit() 
-            assert bits[1] == '' or bits[1].isdigit() 
+            assert len(bits) <= 2
+            assert bits[0] == '' or bits[0].isdigit()
+            assert bits[1] == '' or bits[1].isdigit()
         except AssertionError:
             raise Exception('Invalid value for %s!  Must be a float format string.' % name)
 
     def _validate_function(self, name, val):
         try:
-            assert hasattr(val, '__call__') 
+            assert hasattr(val, '__call__')
         except AssertionError:
             raise Exception('Invalid value for %s!  Must be a function.' % name)
 
@@ -306,19 +306,19 @@ class PrettyTable(object):
             assert val in (ALL,
              FRAME,
              HEADER,
-             NONE) 
+             NONE)
         except AssertionError:
             raise Exception('Invalid value for %s!  Must be ALL, FRAME, HEADER or NONE.' % name)
 
     def _validate_vrules(self, name, val):
         try:
-            assert val in (ALL, FRAME, NONE) 
+            assert val in (ALL, FRAME, NONE)
         except AssertionError:
             raise Exception('Invalid value for %s!  Must be ALL, FRAME, or NONE.' % name)
 
     def _validate_field_name(self, name, val):
         try:
-            assert val in self._field_names or val is None 
+            assert val in self._field_names or val is None
         except AssertionError:
             raise Exception('Invalid field name: %s!' % val)
 
@@ -340,7 +340,7 @@ class PrettyTable(object):
 
     def _validate_attributes(self, name, val):
         try:
-            assert isinstance(val, dict) 
+            assert isinstance(val, dict)
         except AssertionError:
             raise Exception('attributes must be a dictionary of name/value pairs!')
 
@@ -411,9 +411,9 @@ class PrettyTable(object):
 
     def _get_fields(self):
         """List or tuple of field names to include in displays
-        
+
         Arguments:
-        
+
         fields - list or tuple of field names to include in displays"""
         return self._fields
 
@@ -425,9 +425,9 @@ class PrettyTable(object):
 
     def _get_start(self):
         """Start index of the range of rows to print
-        
+
         Arguments:
-        
+
         start - index of first data row to include in output"""
         return self._start
 
@@ -439,9 +439,9 @@ class PrettyTable(object):
 
     def _get_end(self):
         """End index of the range of rows to print
-        
+
         Arguments:
-        
+
         end - index of last data row to include in output PLUS ONE (list slice style)"""
         return self._end
 
@@ -453,9 +453,9 @@ class PrettyTable(object):
 
     def _get_sortby(self):
         """Name of field by which to sort rows
-        
+
         Arguments:
-        
+
         sortby - field name to sort by"""
         return self._sortby
 
@@ -467,9 +467,9 @@ class PrettyTable(object):
 
     def _get_reversesort(self):
         """Controls direction of sorting (ascending vs descending)
-        
+
         Arguments:
-        
+
         reveresort - set to True to sort by descending order, or False to sort by ascending order"""
         return self._reversesort
 
@@ -481,9 +481,9 @@ class PrettyTable(object):
 
     def _get_sort_key(self):
         """Sorting key function, applied to data points before sorting
-        
+
         Arguments:
-        
+
         sort_key - a function which takes one argument and returns something to be sorted"""
         return self._sort_key
 
@@ -495,9 +495,9 @@ class PrettyTable(object):
 
     def _get_header(self):
         """Controls printing of table header with field names
-        
+
         Arguments:
-        
+
         header - print a header showing field names (True or False)"""
         return self._header
 
@@ -509,9 +509,9 @@ class PrettyTable(object):
 
     def _get_header_style(self):
         """Controls stylisation applied to field names in header
-        
+
         Arguments:
-        
+
         header_style - stylisation to apply to field names in header ("cap", "title", "upper", "lower" or None)"""
         return self._header_style
 
@@ -523,9 +523,9 @@ class PrettyTable(object):
 
     def _get_border(self):
         """Controls printing of border around table
-        
+
         Arguments:
-        
+
         border - print a border around the table (True or False)"""
         return self._border
 
@@ -537,9 +537,9 @@ class PrettyTable(object):
 
     def _get_hrules(self):
         """Controls printing of horizontal rules after rows
-        
+
         Arguments:
-        
+
         hrules - horizontal rules style.  Allowed values: FRAME, ALL, HEADER, NONE"""
         return self._hrules
 
@@ -551,9 +551,9 @@ class PrettyTable(object):
 
     def _get_vrules(self):
         """Controls printing of vertical rules between columns
-        
+
         Arguments:
-        
+
         vrules - vertical rules style.  Allowed values: FRAME, ALL, NONE"""
         return self._vrules
 
@@ -566,7 +566,7 @@ class PrettyTable(object):
     def _get_int_format(self):
         """Controls formatting of integer data
         Arguments:
-        
+
         int_format - integer format string"""
         return self._int_format
 
@@ -579,7 +579,7 @@ class PrettyTable(object):
     def _get_float_format(self):
         """Controls formatting of floating point data
         Arguments:
-        
+
         float_format - floating point format string"""
         return self._float_format
 
@@ -591,9 +591,9 @@ class PrettyTable(object):
 
     def _get_padding_width(self):
         """The number of empty spaces between a column's edge and its content
-        
+
         Arguments:
-        
+
         padding_width - number of spaces, must be a positive integer"""
         return self._padding_width
 
@@ -605,9 +605,9 @@ class PrettyTable(object):
 
     def _get_left_padding_width(self):
         """The number of empty spaces between a column's left edge and its content
-        
+
         Arguments:
-        
+
         left_padding - number of spaces, must be a positive integer"""
         return self._left_padding_width
 
@@ -619,9 +619,9 @@ class PrettyTable(object):
 
     def _get_right_padding_width(self):
         """The number of empty spaces between a column's right edge and its content
-        
+
         Arguments:
-        
+
         right_padding - number of spaces, must be a positive integer"""
         return self._right_padding_width
 
@@ -633,9 +633,9 @@ class PrettyTable(object):
 
     def _get_vertical_char(self):
         """The charcter used when printing table borders to draw vertical lines
-        
+
         Arguments:
-        
+
         vertical_char - single character string used to draw vertical lines"""
         return self._vertical_char
 
@@ -648,9 +648,9 @@ class PrettyTable(object):
 
     def _get_horizontal_char(self):
         """The charcter used when printing table borders to draw horizontal lines
-        
+
         Arguments:
-        
+
         horizontal_char - single character string used to draw horizontal lines"""
         return self._horizontal_char
 
@@ -663,9 +663,9 @@ class PrettyTable(object):
 
     def _get_junction_char(self):
         """The charcter used when printing table borders to draw line junctions
-        
+
         Arguments:
-        
+
         junction_char - single character string used to draw line junctions"""
         return self._junction_char
 
@@ -678,9 +678,9 @@ class PrettyTable(object):
 
     def _get_format(self):
         """Controls whether or not HTML tables are formatted to match styling options
-        
+
         Arguments:
-        
+
         format - True or False"""
         return self._format
 
@@ -692,9 +692,9 @@ class PrettyTable(object):
 
     def _get_print_empty(self):
         """Controls whether or not empty tables produce a header and frame or just an empty string
-        
+
         Arguments:
-        
+
         print_empty - True or False"""
         return self._print_empty
 
@@ -706,9 +706,9 @@ class PrettyTable(object):
 
     def _get_attributes(self):
         """A dictionary of HTML attribute name/value pairs to be included in the <table> tag when printing HTML
-        
+
         Arguments:
-        
+
         attributes - dictionary of attributes"""
         return self._attributes
 
@@ -785,9 +785,9 @@ class PrettyTable(object):
 
     def add_row(self, row):
         """Add a row to the table
-        
+
         Arguments:
-        
+
         row - row of data, should be a list with as many elements as the table
         has fields"""
         if self._field_names and len(row) != len(self._field_names):
@@ -798,9 +798,9 @@ class PrettyTable(object):
 
     def del_row(self, row_index):
         """Delete a row to the table
-        
+
         Arguments:
-        
+
         row_index - The index of the row you want to delete.  Indexing starts at 0."""
         if row_index > len(self._rows) - 1:
             raise Exception('Cant delete row at index %d, table only has %d rows!' % (row_index, len(self._rows)))
@@ -808,9 +808,9 @@ class PrettyTable(object):
 
     def add_column(self, fieldname, column, align = 'c', valign = 't'):
         """Add a column to the table.
-        
+
         Arguments:
-        
+
         fieldname - name of the field to contain the new column of data
         column - column of data, should be a list with as many elements as the
         table has rows
@@ -878,9 +878,9 @@ class PrettyTable(object):
 
     def _get_rows(self, options):
         """Return only those data rows that should be printed, based on slicing and sorting.
-        
+
         Arguments:
-        
+
         options - dictionary of option settings."""
         rows = copy.deepcopy(self._rows[options['start']:options['end']])
         if options['sortby']:
@@ -898,9 +898,9 @@ class PrettyTable(object):
 
     def get_string(self, **kwargs):
         """Return string representation of table in current state.
-        
+
         Arguments:
-        
+
         start - index of first data row to include in output
         end - index of last data row to include in output PLUS ONE (list slice style)
         fields - names of fields (columns) to include
@@ -1075,9 +1075,9 @@ class PrettyTable(object):
 
     def get_html_string(self, **kwargs):
         """Return string representation of HTML formatted version of table in current state.
-        
+
         Arguments:
-        
+
         start - index of first data row to include in output
         end - index of last data row to include in output PLUS ONE (list slice style)
         fields - names of fields (columns) to include
@@ -1342,7 +1342,7 @@ def from_html_one(html_code, **kwargs):
     """
     tables = from_html(html_code, **kwargs)
     try:
-        assert len(tables) == 1 
+        assert len(tables) == 1
     except AssertionError:
         raise Exception('More than one <table> in provided HTML code!  Use from_html instead.')
 
