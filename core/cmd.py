@@ -1,5 +1,6 @@
 # Embedded file name: core\cmd.py
 import base64
+import hashlib,binascii
 from core import config
 from core.Encryption import *
 from lib import prettytable
@@ -19,6 +20,7 @@ class cmd:
      'payload',
      'modules',
      'encode64',
+     'gen_ntlm',
      'drm',
      'DA',
      'downloads',
@@ -50,6 +52,7 @@ class cmd:
      ['upload', 'upload files to the victim'],
      ['modules', 'list all the Available modules in Modules directory'],
      ['encode64', 'encode any command to base64 encoded UTF-8 command ( can be decoded in powershell)'],
+     ['gen_ntlm', 'generate ntlm hash for given passowrd'],
      ['drm', 'disable windows realtime monitoring - require admin privileges'],
      ['screenshot', 'take screenshot form  the victim'],
      ['DA', 'Run defense Analysis Module'],
@@ -198,6 +201,16 @@ class cmd:
             print "encoded command :  "+base64.b64encode(b64.encode('UTF-16LE')).decode("utf-8")
         else:
             print "[-] please add your command as argument : encode64 <command>"
+
+    def gen_ntlm(self, args=None):
+        if len(args) > 1:
+            password=args[1]
+            hash = hashlib.new('md4', password.encode('utf-16le')).digest()
+            hash=binascii.hexlify(hash)
+            print "NTLM Hash :  "+hash
+        else:
+            print "[-] please add your password as argument : gen_ntlm <password>"
+
 
     def DA(self, args=None):
         if config.get_pointer()=='main':
