@@ -79,7 +79,7 @@ def update_template():
     config.write(data)
     config.close()
     template.close()
-    print "Everything Done you can run ninja by : python ninja.py"
+    print "Everything Done you can run ninja by : python Ninja.py"
 
 def log_campaign():
     global beacon,IP,PORT,Urls
