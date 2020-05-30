@@ -346,13 +346,13 @@ def main():
 
     try:
         if SSL==True:
-            host=[HOST,PORT]
+            host=['0.0.0.0',PORT]
             cert = {"ssl_context": (CERT, KEY)}
             thread = threading.Thread(target=app.run, args=(host), kwargs=cert)
             thread.daemon = True
             thread.start()
         else:
-            host=[HOST,PORT]
+            host=['0.0.0.0',PORT]
             thread = threading.Thread(target=app.run, args=(host))
             thread.daemon = True
             thread.start()
