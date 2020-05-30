@@ -115,8 +115,7 @@ def get_ssl():
             key='ninja.key'
             return
         if CC=="no":
-            SSL="False"
-            return
+            break
         else:
             continue
     CC=''
