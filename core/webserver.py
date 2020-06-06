@@ -1,5 +1,5 @@
 # Embedded file name: core\webserver.py
-from lib import web
+
 from core import config
 from core import DA
 from core import Kerberoast
