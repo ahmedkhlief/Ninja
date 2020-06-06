@@ -1,5 +1,6 @@
 # Embedded file name: muddyc3.py
 import signal
+import readline
 import sys
 import time
 try:
@@ -11,6 +12,7 @@ from core.payloads import *
 from core import webserver
 from core import header
 from core.cmd import cmd
+from core.cmd import *
 from core.config import *
 #from core.config  import *
 from core.color import bcolors
@@ -57,7 +59,11 @@ def main():
     config.PAYLOAD()
     config.STAGER()
     cspayload()
+    readline.read_history_file(".history")
     while True:
+        readline.set_completer(Command_Completer)
+        readline.parse_and_bind("tab: complete")
+        readline.write_history_file(".history")
         if config.POINTER == 'main':
             command = raw_input('(%s : %s) ' % (config.BASE, config.POINTER))
         else:
