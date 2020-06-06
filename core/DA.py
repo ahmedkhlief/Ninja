@@ -251,7 +251,7 @@ def  getscore():
 
 
 
-def main(fname="DA/ahmedkl@deadsec.comDA_out.txt"):
+def main(fname="DA/DA_out.txt"):
     try:
         file=open(fname)
         data=file.read()
