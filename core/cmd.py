@@ -333,7 +333,7 @@ class cmd:
         if config.get_pointer()=='main':
             print "you can't use this command in main ! chose an agent"
             return
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load AMSI_Bypass.ps1"))
 
     def dumpcreds(self, args=None):
         if config.get_pointer()=='main':
