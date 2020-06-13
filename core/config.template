@@ -6,7 +6,7 @@ import subprocess
 import string
 import config
 PORT = '{PORT}'
-VERSION = '1.0.1 beta'
+VERSION = '1.1'
 AGENTS = dict()
 COMMAND = dict()
 TIME = dict()
