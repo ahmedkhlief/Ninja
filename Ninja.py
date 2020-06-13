@@ -38,6 +38,7 @@ def main():
     #proxy = raw_input('Enter PROXY:')
     #if proxy:
     #    ip = proxy
+
     server = threading.Thread(target=webserver.main, args=())
     server.start()
     time.sleep(0.5)
@@ -67,7 +68,7 @@ def main():
         if config.POINTER == 'main':
             command = raw_input('(%s : %s) ' % (config.BASE, config.POINTER))
         else:
-            command = raw_input('(%s : Agent(%s)-%s) ' % (config.BASE, str(config.AGENTS[config.POINTER][0]), config.AGENTS[config.POINTER][1]))
+            command = raw_input('(%s : Agent(%s)-%s) ' % (config.BASE, str(config.AGENTS[config.POINTER][0]),bcolors.FAIL + config.AGENTS[config.POINTER][5] + bcolors.ENDC ))
         bcommand = command.strip().split()
         if bcommand:
             if bcommand[0] in cmd.COMMANDS:
