@@ -1,3 +1,6 @@
+# Ninja V1.1 Released ( 16/06/2020 ) .
+Ninja V1.1 is a stable version with many enhancment and new features . you can read about the new changes here : https://shells.systems/ninja-c2-v1-1-new-update-with-many-features/
+
 # What is Ninja ?
 
    Ninja C2 is an Open source C2 server created by Purple Team to do stealthy computer and Active directoty enumeration without being detected by SIEM and AVs , Ninja still in beta version and when the stable version released it will contains many more stealthy techinques and anti-forensic to create a real challenge for blue team to make sure all the defenses configured correctly and they can detect sophisticated attacks.
