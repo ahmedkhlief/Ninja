@@ -1,5 +1,7 @@
 
 import random
+from datetime import datetime
+
 
 beacon=''
 IP=''
@@ -101,6 +103,12 @@ def kill_date():
     while len(CC) == 0:
         CC = raw_input('please enter kill date for this campaign ( format dd/MM/yyyy ) ? ')
         if CC.split("/")>2:
+            try:
+                date = datetime.strptime(CC, '%d/%m/%Y')
+            except:
+                print "you entered wrong date"
+                CC=''
+                continue
             date=CC
             break
         else:
