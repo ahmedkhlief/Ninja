@@ -149,7 +149,7 @@ def payloadjfs():
 def info():
     global COUNT
     data = request.form['data']
-    id= request.form['resource']
+    id= request.form['image']
     #request.args.get('page')
     if AGENTS.get(id) == None and data != None:
         data = data.split('**')
