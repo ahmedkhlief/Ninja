@@ -5,9 +5,11 @@ import sys
 import time
 try:
     from core import config
-except ImportError:
-    print "run : python start_campaign.py to intialize the configuration"
+except Exception as e:
+    print "Error : %s"%e
+    print "if you installed all dependancies run : python start_campaign.py to intialize the configuration"
     exit()
+
 from core.payloads import *
 from core import webserver
 from core import header
