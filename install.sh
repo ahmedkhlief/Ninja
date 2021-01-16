@@ -3,3 +3,4 @@ apt-get install python-pip
 apt-get install mono-devel
 pip install pycrypto
 pip install cheroot
+pip install flask
