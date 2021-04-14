@@ -6,6 +6,7 @@ from Crypto import Random
 import subprocess
 import string
 import core.config
+import donut
 
 PORT = '{PORT}'
 VERSION = '2.0'
