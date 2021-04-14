@@ -50,28 +50,28 @@ def initiate_url():
     modules_url='/'+random.choice(list_full)
     list_full.remove(modules_url.replace("/",""))
 
-    #print "raw_payload="+raw_payload,b52_payload,b64_stager,b52_payload,hjf_payload,b64_payload,hjfs_payload,sct_payload,hta_payload,register_url,download_url,upload_url,image_url,command_url,result_url,modules_url
-    #print "raw_payload="+raw_payload+"\nb52_payload="+b52_payload+"\nb64_stager="+b64_stager+"\nb52_payload="+b52_payload+"\nhjf_payload="+hjf_payload+"\nb64_payload="+b64_payload+"\nhjfs_payload="+hjfs_payload+"\nsct_payload="+sct_payload+"\nhta_payload="+hta_payload+"\nregister_url="+register_url+"\ndownload_url="+download_url+"\nupload_url="+upload_url+"\nimage_url="+image_url+"\ncommand_url="+command_url+"\nresult_url="+result_url+"\nmodules_url="+modules_url
+    #print ("raw_payload="+raw_payload,b52_payload,b64_stager,b52_payload,hjf_payload,b64_payload,hjfs_payload,sct_payload,hta_payload,register_url,download_url,upload_url,image_url,command_url,result_url,modules_url
+    #print ("raw_payload="+raw_payload+"\nb52_payload="+b52_payload+"\nb64_stager="+b64_stager+"\nb52_payload="+b52_payload+"\nhjf_payload="+hjf_payload+"\nb64_payload="+b64_payload+"\nhjfs_payload="+hjfs_payload+"\nsct_payload="+sct_payload+"\nhta_payload="+hta_payload+"\nregister_url="+register_url+"\ndownload_url="+download_url+"\nupload_url="+upload_url+"\nimage_url="+image_url+"\ncommand_url="+command_url+"\nresult_url="+result_url+"\nmodules_url="+modules_url
     Urls="raw_payload=\'"+raw_payload+"\'\nb52_payload=\'"+b52_payload+"\'\nb64_stager=\'"+b64_stager+"\'\nb52_stager=\'"+b52_stager+"\'\nhjf_payload=\'"+hjf_payload+"\'\nb64_payload=\'"+b64_payload+"\'\nhjfs_payload=\'"+hjfs_payload+"\'\nsct_payload=\'"+sct_payload+"\'\nhta_payload=\'"+hta_payload+"\'\nregister_url=\'"+register_url+"\'\ndownload_url=\'"+download_url+"\'\nupload_url=\'"+upload_url+"\'\nimage_url=\'"+image_url+"\'\ncommand_url=\'"+command_url+"\'\nresult_url=\'"+result_url+"\'\nmodules_url=\'"+modules_url+"\'"
 
-    print "Urls will be used in this campaign\n"+Urls
+    print ("Urls will be used in this campaign\n"+Urls)
 
 def get_ip():
     global IP,PORT
     CC=''
     while len(CC) == 0:
-        CC = raw_input('Enter a DN/IP:port for this campaign ')
+        CC = input('Enter a DN/IP:port for this campaign ')
     CC = CC.split(':')
     IP = CC[0]
     PORT=CC[1]
-    print "You chosed IP: "+IP+"and port: "+PORT+"\n"
+    print ("You chosed IP: "+IP+"and port: "+PORT+"\n")
 
 
 def get_beacon():
     global beacon
     CC=''
     while len(CC) == 0:
-        CC = raw_input('Enter the default beacon period ( connect back) for this campaign in seconds ')
+        CC = input('Enter the default beacon period ( connect back) for this campaign in seconds ')
     beacon=CC
 
 def update_template():
@@ -83,7 +83,7 @@ def update_template():
     config.write(data)
     config.close()
     template.close()
-    print "Everything Done you can run ninja by : python Ninja.py"
+    print ("Everything Done you can run ninja by : python3 Ninja.py")
 
 def log_campaign():
     global beacon,IP,PORT,Urls,date
@@ -101,12 +101,12 @@ def kill_date():
     global date
     CC=''
     while len(CC) == 0:
-        CC = raw_input('please enter kill date for this campaign ( format dd/MM/yyyy ) ? ')
-        if CC.split("/")>2:
+        CC = input('please enter kill date for this campaign ( format dd/MM/yyyy ) ? ')
+        if len(CC.split("/"))>2:
             try:
                 date = datetime.strptime(CC, '%d/%m/%Y')
             except:
-                print "you entered wrong date"
+                print ("you entered wrong date")
                 CC=''
                 continue
             date=CC
@@ -118,7 +118,7 @@ def get_ssl():
     global SSL,key,cert
     CC=''
     while len(CC) == 0:
-        CC = raw_input('Do you want to use SSL ? (yes/no) ')
+        CC = input('Do you want to use SSL ? (yes/no) ')
         if CC=="yes":
             SSL="True"
             break
@@ -129,7 +129,7 @@ def get_ssl():
             continue
     CC=''
     while len(CC) == 0:
-        CC = raw_input('Do you want to use default self signed SSL certificate  ? (yes/no) ')
+        CC = input('Do you want to use default self signed SSL certificate  ? (yes/no) ')
         if CC=="yes":
             cert='ninja.crt'
             key='ninja.key'
@@ -140,21 +140,21 @@ def get_ssl():
             continue
     CC=''
     while len(CC) == 0:
-        CC = raw_input('Enter the full path for certificate ( ex : /root/certificate.crt ) ')
+        CC = input('Enter the full path for certificate ( ex : /root/certificate.crt ) ')
     cert=CC
     CC=''
     while len(CC) == 0:
-        CC = raw_input('Enter the full path for private key ( ex : /root/private.key ) ')
+        CC = input('Enter the full path for private key ( ex : /root/private.key ) ')
     key=CC
 
 if __name__ == '__main__':
-    try :
-        initiate_url()
-        get_ip()
-        get_beacon()
-        kill_date()
-        get_ssl()
-        update_template()
-        log_campaign()
-    except Exception as e:
-        print '[-] ERROR(main): %s' % str(e)
+    #try :
+    initiate_url()
+    get_ip()
+    get_beacon()
+    kill_date()
+    get_ssl()
+    update_template()
+    log_campaign()
+    #except Exception as e:
+    #    print ('[-] ERROR(main): %s' % str(e))
