@@ -1387,7 +1387,7 @@ def main():
      5386,
      1554769,
      869.4])
-    print x
+    print (x)
 
 
 if __name__ == '__main__':
