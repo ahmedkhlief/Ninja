@@ -1,6 +1,6 @@
 import re
 #from core.color import bcolors
-from color import bcolors
+from core.color import bcolors
 AV_list = {
     "Kaspersky":    ["avp", "avpui", "klif", "KAVFS", "kavfsslp","prunsrv"],
     "Malwarebytes":["mbcloudea","mbamservice"],
@@ -87,11 +87,11 @@ def detect_SIEM(ps):
                     sandbox.append(6)
     l=len(siem)
     if l>0:
-        print bcolors.FAIL +"SIEM detected using process list : "+ bcolors.ENDC,siem
-        print "###################################"
+        print (bcolors.FAIL +"SIEM detected using process list : "+ bcolors.ENDC,siem)
+        print ("###################################")
     else:
-        print bcolors.OKGREEN+"No SIEM Detected "+ bcolors.ENDC
-        print "###################################"
+        print (bcolors.OKGREEN+"No SIEM Detected "+ bcolors.ENDC)
+        print ("###################################")
 
 
 def detect_AV(ps,av):
@@ -104,7 +104,7 @@ def detect_AV(ps,av):
             AV.append(fields[1])
     l=len(AV)
     if  l>0:
-        print bcolors.FAIL +"AV detected using powershell API : "+ bcolors.ENDC,AV
+        print (bcolors.FAIL +"AV detected using powershell API : "+ bcolors.ENDC,AV)
 
     for i in ps.split():
         for t,s in AV_list.items():
@@ -114,32 +114,32 @@ def detect_AV(ps,av):
                     score.append(AV_score[t])
     l=len(AVP)
     if l>0:
-        print bcolors.FAIL +"AV detected using process list : "+ bcolors.ENDC,AVP
-        print "###################################"
+        print (bcolors.FAIL +"AV detected using process list : "+ bcolors.ENDC,AVP)
+        print ("###################################")
     else:
-        print bcolors.OKGREEN+"No AV Detected "+ bcolors.ENDC
-        print "###################################"
+        print (bcolors.OKGREEN+"No AV Detected "+ bcolors.ENDC)
+        print ("###################################")
 def AD_enum(adusers,adgroups,ADPC):
-    print "\n\nDomain Users :\n"
+    print ("\n\nDomain Users :\n")
     for i in adusers.split("\n"):
         fields=i.split(": ")
         #print fields[0]
         if fields[0].strip()=="Name":
-            print fields[1].strip(),",",
+            print (fields[1].strip(),",",)
 
-    print "\n\n############\nDomain Groups :\n"
+    print ("\n\n############\nDomain Groups :\n")
     for i in adgroups.split("\n")[4:]:
-        print i.strip(),",",
+        print (i.strip(),",",)
 
-    print "\n\n############\nDomain Computers :\n"
+    print ("\n\n############\nDomain Computers :\n")
     #print ADPC.split("\n\n")[1].split("\n")
 
     for i in ADPC.split("\n\n"):
         for d in i.split("\n"):
             fields=d.split(": ")
             if fields[0].strip()=="name":
-                print fields[1].strip(),",",
-    print "\n\n###################################"
+                print (fields[1].strip(),",",)
+    print ("\n\n###################################")
 def detect_sandbox(ps):
     global Sandbox_IOC
     for i in ps.split():
@@ -162,7 +162,7 @@ def PCinfo(pcinfo):
         #if fields[0].strip()=="OsVersion":
         if len(fields)>1:
             pclist[fields[0].strip()]=fields[1]
-    print "PC Report : \n  Host Name: %s \n  OS : %s \n  Build Number : %s \n  Local Time : %s \n  Time Zone : %s \n  Last Boot Time : %s \n " % (pclist["CSName"],pclist["Caption"],pclist["BuildNumber"],pclist["LocalDateTime"],pclist["CurrentTimeZone"],pclist["LastBootUpTime"]),"Bios Manufacturer : "+pclist["Manufacturer"].strip()+" , "+pclist["SMBIOSBIOSVersion"].strip()+" \n###################################"
+    print ("PC Report : \n  Host Name: %s \n  OS : %s \n  Build Number : %s \n  Local Time : %s \n  Time Zone : %s \n  Last Boot Time : %s \n " % (pclist["CSName"],pclist["Caption"],pclist["BuildNumber"],pclist["LocalDateTime"],pclist["CurrentTimeZone"],pclist["LastBootUpTime"]),"Bios Manufacturer : "+pclist["Manufacturer"].strip()+" , "+pclist["SMBIOSBIOSVersion"].strip()+" \n###################################")
 
     if pclist["Manufacturer"].strip().lower().find("innotek")>-1 or pclist["SMBIOSBIOSVersion"].strip().lower().find("virtualbox")>-1:
         sandbox.append(9)
@@ -180,46 +180,46 @@ def PCinfo(pcinfo):
 
 def gethotfix(hotfixes):
     result = re.findall(r"KB\d{7}", hotfixes)
-    print  "Installed Updates : ",
+    print ("Installed Updates : ",)
     for i in result:
-        print i,
-    print "\n###################################"
+        print (i,)
+    print ("\n###################################")
 def getpwl(pwl):
     global score,sandbox
     if pwl.find("Windows PowerShell")>=0:
-        print bcolors.FAIL +"powershell logging enabled"+ bcolors.ENDC
+        print (bcolors.FAIL +"powershell logging enabled"+ bcolors.ENDC)
         score.append(2)
         sandbox.append(8)
     else:
         score.append(8)
         sandbox.append(1)
-    print "###################################"
+    print ("###################################")
 
 def getadmin(isadmin):
     global score,sandbox
     if isadmin.strip()=="True":
-        print "you have admin privileges"+ bcolors.ENDC
+        print ("you have admin privileges"+ bcolors.ENDC)
         score.append(3)
         sandbox.append(7)
     else:
-        print bcolors.FAIL +"you don't have admin privileges"+ bcolors.ENDC
+        print (bcolors.FAIL +"you don't have admin privileges"+ bcolors.ENDC)
         score.append(9)
         sandbox.append(1)
-    print "###################################"
+    print ("###################################")
 
 def getjoined(isjoined):
     global score,sandbox
     if isjoined.strip().replace("\n","").split(",")[0].strip()=="True":
-        print bcolors.OKGREEN +"this device part of the domain "+isjoined.strip("\n").split(",")[1]+ bcolors.ENDC
+        print (bcolors.OKGREEN +"this device part of the domain "+isjoined.strip("\n").split(",")[1]+ bcolors.ENDC)
         score.append(8)
         sandbox.append(1)
-        print "###################################"
+        print ("###################################")
         return True
     else:
-        print bcolors.FAIL +"this device is not part of domain"+ bcolors.ENDC
+        print (bcolors.FAIL +"this device is not part of domain"+ bcolors.ENDC)
         score.append(3)
         sandbox.append(5)
-        print "###################################"
+        print ("###################################")
         return False
 
 
@@ -231,23 +231,23 @@ def  getscore():
         sum=sum+i
     avg=(sum/len(score))
     if avg<=4:
-        print bcolors.OKGREEN +"Hardness score ("+str(avg)+"/10"+") : Easy , you can pwn the system easily"+ bcolors.ENDC
+        print (bcolors.OKGREEN +"Hardness score ("+str(avg)+"/10"+") : Easy , you can pwn the system easily"+ bcolors.ENDC)
     if avg>=5 and avg<=7:
-        print bcolors.WARNING +"Hardness score ("+str(avg)+"/10"+") : Medium , you can pwn the system with good enumeration and availble local exploit "+ bcolors.ENDC
+        print (bcolors.WARNING +"Hardness score ("+str(avg)+"/10"+") : Medium , you can pwn the system with good enumeration and availble local exploit "+ bcolors.ENDC)
     if avg>7:
-        print bcolors.FAIL +"Hardness score ("+str(avg)+"/10"+") : Hard , be careful from the AV and the security updates installed"+ bcolors.ENDC
+        print (bcolors.FAIL +"Hardness score ("+str(avg)+"/10"+") : Hard , be careful from the AV and the security updates installed"+ bcolors.ENDC)
     sum=0
     for i in sandbox:
         #print i,
         sum=sum+i
     avg=(sum/len(sandbox))
     if avg<=4:
-        print bcolors.OKGREEN +"Sandbox Score ("+str(avg)+"/10"+") : you are probably in real live system"+ bcolors.ENDC
+        print (bcolors.OKGREEN +"Sandbox Score ("+str(avg)+"/10"+") : you are probably in real live system"+ bcolors.ENDC)
     if avg>=5 and avg<=7:
-        print bcolors.WARNING +"Sandbox Score ("+str(avg)+"/10"+") : check and confirm as you probably in a security analyst device"+ bcolors.ENDC
+        print (bcolors.WARNING +"Sandbox Score ("+str(avg)+"/10"+") : check and confirm as you probably in a security analyst device"+ bcolors.ENDC)
     if avg>7:
-        print bcolors.FAIL +"Sandbox Score ("+str(avg)+"/10"+") : you are in a sandbox"+ bcolors.ENDC
-    print "###################################"
+        print (bcolors.FAIL +"Sandbox Score ("+str(avg)+"/10"+") : you are in a sandbox"+ bcolors.ENDC)
+    print ("###################################")
 
 
 
@@ -280,7 +280,7 @@ def main(fname="DA/DA_out.txt"):
         gethotfix(hotfixes)
         if joined:
             AD_enum(adusers,adgroups,ADPC)
-        print "\nShares :\n",shares
+        print ("\nShares :\n",shares)
 
     except Exception as e:
-        print '[-] ERROR(webserver->main): %s' % str(e)
+        print ('[-] ERROR(webserver->main): %s' % str(e))

@@ -1,7 +1,7 @@
 import os, base64, random, codecs, glob, readline, re
 from Crypto import Random
 import string
-import config
+import core.config
 
 def get_encryption(key, iv='0123456789ABCDEF'):
     from Crypto.Cipher import AES
