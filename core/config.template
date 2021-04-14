@@ -8,7 +8,7 @@ import string
 import core.config
 
 PORT = '{PORT}'
-VERSION = '1.1'
+VERSION = '2.0'
 AGENTS = dict()
 COMMAND = dict()
 TIME = dict()
