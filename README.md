@@ -1,12 +1,12 @@
 # Ninja V2.0 Released ( 16/04/2021 ) .
-Ninja V2.0 refactored to use python3 with new features :
+Ninja V2.0 rebuilt to use python3 with new features :
 
 1) Payload variable obfuscation each time the payload requested to bypass AV
 2) generate shellcodes using nasm and donut
 3) new (migrate) command to do process migration .
 4) new persistence command using scheduled tasks
 5) new pre-compiled mimkatz powershell version
-6) new payloads
+6) new payloads .
 7) updated AMSI bypass script .
 
 
