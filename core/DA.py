@@ -125,11 +125,11 @@ def AD_enum(adusers,adgroups,ADPC):
         fields=i.split(": ")
         #print fields[0]
         if fields[0].strip()=="Name":
-            print (fields[1].strip(),",",)
+            print (fields[1].strip(),"," , end='')
 
     print ("\n\n############\nDomain Groups :\n")
     for i in adgroups.split("\n")[4:]:
-        print (i.strip(),",",)
+        print (i.strip(),",", end='')
 
     print ("\n\n############\nDomain Computers :\n")
     #print ADPC.split("\n\n")[1].split("\n")
@@ -138,7 +138,7 @@ def AD_enum(adusers,adgroups,ADPC):
         for d in i.split("\n"):
             fields=d.split(": ")
             if fields[0].strip()=="name":
-                print (fields[1].strip(),",",)
+                print (fields[1].strip(),",", end='')
     print ("\n\n###################################")
 def detect_sandbox(ps):
     global Sandbox_IOC
