@@ -11,8 +11,8 @@ public class {class}
 
     public static void Main(string[] args)
     {
-        startproc("C:\\Windows\\SysWOW64\\nslookup.exe");
-
+        //startproc("C:\\Windows\\SysWOW64\\nslookup.exe");
+        startproc("C:\\Windows\\system32\\nslookup.exe");
         String procname = "nslookup";
         Process targetProcess;
 
