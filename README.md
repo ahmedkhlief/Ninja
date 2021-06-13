@@ -91,11 +91,11 @@ You need to setup Ninja by running install.sh script :
 
 After that you need to initialize the campagin :
 
-`python start_campaign.py`
+`python3 start_campaign.py`
 
 Now you can start the Ninja server  :
 
-`python Ninja.py`
+`python3 Ninja.py`
 
 You will by greeted with the following once you run it :
 

@@ -1,0 +1,26 @@
+=================================================================================
+==========================New Campaign==========================================
+Urls for this campaign  :
+raw_payload='/svce'
+b52_payload='/oracle'
+b64_stager='/wsil'
+b52_stager='/ws4ee'
+hjf_payload='/webservice'
+b64_payload='/uddigui'
+hjfs_payload='/jbossws'
+sct_payload='/wsdl'
+hta_payload='/axis'
+register_url='/query'
+download_url='/index'
+upload_url='/services'
+image_url='/inspection'
+command_url='/names'
+result_url='/uddisoap'
+modules_url='/methods'IP/Domain:Port for this Campaign : 
+51.68.215.173:50025
+Beacon period for this campaign : 3
+
+
+kill date for this campaign : 13/06/2021
+
+
