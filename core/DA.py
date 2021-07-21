@@ -6,7 +6,7 @@ AV_list = {
     "Malwarebytes":["mbcloudea","mbamservice"],
     "Symantec":    ["SmcGui", "SISIPSService","SemSvc","snac64","sesmcontinst"],
     "Bitdefender": ["vsserv"],
-    "TrendMicro": ["tmntsrv","PwmTower"],
+    "TrendMicro": ["tmntsrv","PwmTower","SMEX_SystemWatcher","SMEX_Master"],
     "Windows Defender": ["MsMpEng"],
     "Avast":    ["aswBcc", "bcc"],
     "Cylance": ["CylanceSvc", "CylanceUi"],
@@ -15,12 +15,13 @@ AV_list = {
     "F-Secure": ["fsdevcon", "FSORSPClient"],
     "MacAfee": ["enterceptagent", "McAfeeEngineService", "McAfeeFramework"],
     "SentinelOne": ["SentinelAgent", "SentinelOne"],
-    "Sophos": ["sophosssp", "sophossps"],
+    "Sophos": ["sophosssp", "sophossps","ALMon","ALsvc","swc_service","swi_fc","swi_filter","swi_service"],
     "ZoneALarm": ["zlclient"],
     "Panda AntiVirus": ["AVENGINE"],
     "AVG": ["avgemc"],
     "Avira" : ["avscan"],
     "G data" : ["AVKProxy"],
+    "Cybereason":["Cybereason","CybereasonRansomFree"],
 
 
 }
