@@ -86,10 +86,13 @@ def main():
     config.obfuscate()
     config.STAGER()
     cspayload()
-    config.migrator()
+    if config.Donut==True:
+        print("Donut Disabled so , kindly create a new campaign ")
+        donut_shellcode()
+        config.migrator()
     cmd_shellcodex86()
     cmd_shellcodex64()
-    donut_shellcode()
+
     f=open(".history","a").write("\n")
     readline.read_history_file(".history")
     try:
