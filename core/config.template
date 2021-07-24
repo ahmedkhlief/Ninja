@@ -21,6 +21,7 @@ BASE = 'Ninja'
 POINTER = 'main'
 Implant_Type='agent'
 PAYLOADS = []
+Donut={DONUT}
 SSL={SSL}
 CERT='{CERT}'
 KEY='{KEY}'
