@@ -135,6 +135,7 @@ def pwsh_base52():
     config.PAYLOADS.append(payload)
     config.PAYLOADS.append(payload2)
     config.PAYLOADS.append(payload3)
+    config.PAYLOADS.append(payload4)
 
 def cmd_shellcodex64():
     f=open("agents/cmd_shellcodex64.ninja","r")
@@ -156,6 +157,7 @@ def cmd_shellcodex64():
         print("---+  CMD Shellcode X64  ---+ !\n")
         print('assembly code and compiled binary writen to payloads\n' )
         print('unsigned char sc[] = "%s"; ' % sc.strip("\n") )
+        config.PAYLOADS.append('unsigned char sc[] = "%s"; ' % sc.strip("\n") )
     except:
         print("Please check if nasm installed")
 
@@ -180,6 +182,7 @@ def cmd_shellcodex86():
         print("---+  CMD Shellcode X86 ---+ !\n")
         print('assembly code and compiled binary writen to payloads \n' )
         print('unsigned char sc[] = "%s"; ' % sc.strip("\n") )
+        config.PAYLOADS.append('unsigned char sc[] = "%s"; ' % sc.strip("\n") )
     except:
         print("Please check if nasm installed")
 
