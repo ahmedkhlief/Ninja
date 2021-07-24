@@ -154,7 +154,6 @@ count
 b
 rating
 pass2
-hostname
 move
 hash
 dry
@@ -2408,8 +2407,6 @@ IGNOREFIRST
 if
 idstring
 idlist
-hosts
-HOST
 hdnProductId
 gzip
 grid

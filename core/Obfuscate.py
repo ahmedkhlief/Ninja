@@ -132,4 +132,10 @@ def obfvar(payload):
     list_full.remove(obf)
     obf=random.choice(list_full)
 
+    payload=payload.replace('{AGENTVAR}',obf)
+    list_full.remove(obf)
+    obf=random.choice(list_full)
+    payload=payload.replace('{DATAVAR}',obf)
+    list_full.remove(obf)
+    obf=random.choice(list_full)
     return payload
