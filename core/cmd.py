@@ -218,6 +218,17 @@ class cmd:
         webserver.COUNT=0
 
     def delete(self, args = None):
+        if config.get_pointer()=='webshell' or config.Implant_Type=='webshell':
+            config.set_pointer('webshell')
+            id = args[1]
+            webshell=''
+            for i in config.WEBSHELLS:
+                if id == str(config.WEBSHELLS[i][0]):
+                    webshell=i
+                    break
+            if webshell!='':
+                del config.WEBSHELLS[webshell]
+            return
         if config.get_pointer()!='main':
             config.set_pointer('main')
         if len(args) < 2:
