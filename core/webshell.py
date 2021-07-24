@@ -54,7 +54,7 @@ def webshell_execute(webshell,command):
 
 def generate_webshell():
     try:
-        f=open("links.txt")
+        f=open("lib/obf.list")
         links=f.read()
         list_full=links.strip().replace("\r","").split("\n")
         fp = open('agents/webshell.ninja', 'r')
