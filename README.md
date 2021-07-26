@@ -91,11 +91,11 @@ You need to setup Ninja by running install.sh script :
 
 After that you need to initialize the campagin :
 
-`python start_campaign.py`
+`python3 start_campaign.py`
 
 Now you can start the Ninja server  :
 
-`python Ninja.py`
+`python3 Ninja.py`
 
 You will by greeted with the following once you run it :
 
@@ -113,7 +113,7 @@ You will by greeted with the following once you run it :
 88       88 88 88       88 88 `"8bbdP"Y8    88          88  
                           ,88                 88888      888888
                         888P" 		      
-					    V1.0.1 BETA !
+					    V2.0
 
 
  Ninja C2 | Stealthy Pwn like a Ninja
