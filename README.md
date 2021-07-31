@@ -1,3 +1,6 @@
+# Ninja V2.1 Released ( 31/07/2021 ) .
+check the new features here : https://shells.systems/ninjac2-v2-1-new-webshell-agent-more-features-and-updated-av-bypass/
+
 # Ninja V2.0 Released ( 16/04/2021 ) .
 Ninja V2.0 rebuilt to use python3 with new features :
 

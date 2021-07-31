@@ -92,7 +92,8 @@ def main():
         config.migrator()
     cmd_shellcodex86()
     cmd_shellcodex64()
-
+    word_macro()
+    excel_macro()
     f=open(".history","a").write("\n")
     readline.read_history_file(".history")
     try:
