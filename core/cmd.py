@@ -723,7 +723,7 @@ class cmd:
         try:
             fp = open('Modules/safetydump.ninja', 'r')
             temp = fp.read()
-            temp=temp.replace('{class}',"".join([random.choice(string.ascii_uppercase) for i in range(5)]))
+            temp=temp.replace('{CLASS}',"".join([random.choice(string.ascii_uppercase) for i in range(5)]))
             output=open('Modules/SafetyDump.ps1', 'w')
             output.write(temp)
             output.close()
