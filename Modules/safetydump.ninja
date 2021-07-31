@@ -190,4 +190,4 @@ using System.Linq.Expressions;
 
 "@
 
-{CLASS}::MiniDump(-1)
+[{CLASS}]::MiniDump(-1)
