@@ -2,4 +2,4 @@ pycrypto
 cheroot
 flask
 donut-shellcode==0.9.2
-ypykatz
+pypykatz
