@@ -11,8 +11,9 @@ from rich.console import Console
 console = Console()
 
 
-def signal_handler(sig, frame):
-    console.print('\n[!] Exit by typing exit', style="bold red", end="")
+# def signal_handler(sig, frame):
+#    print("\r")
+# console.print('\n[!] Exit by typing exit', style="bold red", end="")
 
 
 def create_dirs(dirs):
@@ -56,18 +57,21 @@ def NinjaCMD():
             if bcommand:
                 if bcommand[0] in cmd.COMMANDS:
                     result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
-                elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
+                elif bcommand[
+                    0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
                     config.COMMAND[config.POINTER].append(encrypt(AESKey, command.strip()))
 
-                elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
+                elif bcommand[
+                    0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
                     try:
-                        _thread.start_new_thread(webshell.webshell_execute, (config.WEBSHELLS[config.POINTER], command.strip(),))
+                        _thread.start_new_thread(webshell.webshell_execute,
+                                                 (config.WEBSHELLS[config.POINTER], command.strip(),))
 
                     except:
                         console.print("[!] Error: unable to start thread", style="bold red")
                         console.print_exception()
-        except EOFError:
-            print("\r")
+        except (EOFError, KeyboardInterrupt):  # Handles Ctrl+C and Ctrl+D (NO exit)
+            console.print("\n[!] Type exit", style="bold red")
             continue
 
 
@@ -80,7 +84,7 @@ def main():
     create_dirs("kerberoast")
     create_dirs("screenshots")
 
-    signal.signal(signal.SIGINT, signal_handler)
+    # signal.signal(signal.SIGINT, signal_handler)
     header.Banner()
 
     # config.set_key()
@@ -142,8 +146,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    # except EOFError:
-    #   console.print('\n[!] Exit by typing exit', style="bold red")
-    #    NinjaCMD()
     except Exception:
         console.print_exception()
