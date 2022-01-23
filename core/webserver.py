@@ -285,7 +285,7 @@ def download():
     #filecontent =request.form[args[1]]
     #id =request.form[args[2]]
     ################
-    #data = request.form['d']
+    data = request.form['d']
     id= request.form['resource']
     #print(id)
     #print(data)
