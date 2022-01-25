@@ -162,18 +162,3 @@ if __name__ == '__main__':
         ninja.main()
     except Exception:
         console.print_exception()
-
-"""
-TODO:
-        * Handle Ctrl+C and Ctrl+D ===> [Done]
-        * Add clear screen option in core/cmd.py ===> [Done]
-        * Try to implement shlex (Needs more testing before implementing) ===> [Done]
-        * Replace pretty tables with rich.tables for a pretty output (Done for help command)
-        * Display listeners in a nicer way [with background colors] -> (Pending...)
-        * Explore and implement default tool colors --> (Pending...)
-        * Make a specific directory for every campaign based on a campaign name (add that option to start_campaign.py)
-        * Add traceback and logging mechanism
-        * Disable verbose output of payloads.. (Needs alot of work in the core/payloads.py (Display only if needed by cmd)
-        * Add new functionalities after having good knowledge in real life scenarios..
-        * Learn more about c2 servers, increase your knowledge and have fun...
-"""
