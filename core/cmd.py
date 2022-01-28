@@ -6,6 +6,7 @@ import pickle
 import time
 
 from prettytable import PrettyTable
+from rich.console import Console
 from rich import box
 from rich.live import Live
 from rich.table import Table
@@ -19,6 +20,8 @@ from core.config import *
 from lib import prettytable
 from subprocess import call
 
+console = Console()
+
 
 def Command_Completer(text, state):
     options = [i for i in cmd.COMMANDS if i.startswith(text)]
@@ -31,7 +34,7 @@ def Command_Completer(text, state):
 class cmd:
     COMMANDS = ['exit',
                 'show',
-                'clear',
+                'reset',
                 'help',
                 'list',
                 'use',
@@ -75,7 +78,7 @@ class cmd:
                 'lsass_memory_dump']
 
     HELPCOMMANDS = [['exit', 'Exit the console , or kill the agent '],
-                    ['clear', 'Clear screen'],
+                    ['reset', 'Clear screen'],
                     ['list', 'List all agents'],
                     ['help', 'Help menu'],
                     ['show', 'Show Command and Controler variables'],
@@ -124,15 +127,23 @@ class cmd:
                      'dump lsass memory without touching the disk then parse it and provide credentials )']]
 
     def help(self, args=None):
-        table = Table(show_header=True, show_lines=True, box=box.ASCII,
-                      safe_box=False)  # Disabled safe_box for better cmd.exe display
-        table.add_column("Command", justify="left")
-        table.add_column("Description", justify="left")
-        with Live(table, refresh_per_second=1) as live:
-            for command in self.HELPCOMMANDS:
-                table.add_row(f"[bold blue]{command[0]}[/bold blue]", f"[white]{command[1]}[/white]")
-
+        table = prettytable.PrettyTable(
+            [bcolors.BOLD + 'Command' + bcolors.ENDC, bcolors.BOLD + 'Description' + bcolors.ENDC])
+        table.border = False
+        table.align = 'l'
+        table.add_row(['-------', '-----------'])
+        for i in self.HELPCOMMANDS:
+            table.add_row([bcolors.OKBLUE + i[0] + bcolors.ENDC, i[1]])
         print(table, end="\n\n")
+    """Below is a white ascii box"""
+    #def help(self, args=None):
+    #    table = Table(show_header=True, show_lines=True, box=box.ASCII,
+    #                  safe_box=False)  # Disabled safe_box for better cmd.exe display
+    #    table.add_column("Command", justify="left")
+    #    table.add_column("Description", justify="left")
+    #    with Live(table, refresh_per_second=1) as live:
+    #        for command in self.HELPCOMMANDS:
+    #            table.add_row(f"[bold blue]{command[0]}[/bold blue]", f"[white]{command[1]}[/white]")
 
     def exit(self, args=None):
         if config.get_pointer() == 'main':
@@ -153,7 +164,7 @@ class cmd:
         else:
             cmd.list_agents(self)
 
-    def clear(self, args=None):
+    def reset(self, args=None):
         # check and make call for specific operating system
         _ = call('clear' if os.name == 'posix' else 'cls')
 
@@ -265,8 +276,8 @@ class cmd:
 
     def payload(self, args=None):
         for i in config.PAYLOADS:
-            print(i)
-            print('')
+            console.print(i, style="green")
+        print("")
 
     def show(self, args=None):
         pass
