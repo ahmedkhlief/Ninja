@@ -3,12 +3,14 @@ from Crypto import Random
 import string
 import core.config
 
+
 def get_encryption(key, iv='0123456789ABCDEF'):
     from Crypto.Cipher import AES
     iv = os.urandom(AES.block_size)
     bkey = base64.b64decode(key)
     aes = AES.new(bkey, AES.MODE_CBC, iv)
     return aes
+
 
 # Decrypt a string from base64 encoding
 
@@ -19,11 +21,14 @@ def decrypt(key, data):
     data = aes.decrypt(base64.b64decode(data))
     return data[16:].decode("utf-8")
 
+
 def decrypt_file(key, data):
     iv = data[0:16]
     aes = get_encryption(key, iv)
     data = aes.decrypt(base64.b64decode(data))
-    return data[16:]#.decode("utf-8")
+    return data[16:]  # .decode("utf-8")
+
+
 # Decrypt a string from base64 encoding
 
 
@@ -38,6 +43,7 @@ def decrypt_bytes_gzip(key, data):
     except Exception:
         data = data
     return data
+
 
 def encrypt(key, data, gzip=False):
     if gzip:
@@ -59,6 +65,7 @@ def encrypt(key, data, gzip=False):
     if not gzip:
         data = base64.b64encode(data)
     return data
+
 
 def generate_key():
     key = "".join([random.choice(string.ascii_uppercase) for i in range(32)])

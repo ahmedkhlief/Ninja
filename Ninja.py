@@ -6,22 +6,24 @@ __version__ = "2.0"
 import _thread
 import threading
 from shlex import split
-
 from rich.console import Console
-import argparse
-from core.cmd import *
-from core.payloads import *
 
 console = Console()
 
+try:
+    from core.cmd import *
+    from core.payloads import *
+    from core import config
+except (ImportError, ImportWarning) as e:
+    console.print("### Please run: python3 start_campaign.py", style="bold red")
+    exit(1)
+
 
 class Ninja:
-    def __init__(self, arg):
-        self.quiet = arg.quiet
-
     def create_dirs(self, dirs):
         try:
-            os.makedirs(dirs)
+            name = campaign_name + "/" + dirs
+            os.makedirs(name)
         except OSError:
             return
 
@@ -51,10 +53,12 @@ class Ninja:
                 if bcommand:
                     if bcommand[0] in cmd.COMMANDS:
                         result = getattr(globals()['cmd'](), bcommand[0])(bcommand)
-                    elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
+                    elif bcommand[
+                        0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'agent':
                         config.COMMAND[config.POINTER].append(encrypt(AESKey, command.strip()))
 
-                    elif bcommand[0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
+                    elif bcommand[
+                        0] not in cmd.COMMANDS and config.POINTER != 'main' and config.POINTER != 'webshell' and config.Implant_Type == 'webshell':
                         try:
                             _thread.start_new_thread(webshell.webshell_execute,
                                                      (config.WEBSHELLS[config.POINTER], command.strip(),))
@@ -66,43 +70,27 @@ class Ninja:
                 console.print("\n[!] Type exit", style="bold red")
                 continue
 
-    def Make_Payloads(self):
-        print('+' + '-' * 60 + '+')
-        cmd().help()
-        print('+' + '-' * 60 + '+')
-        print(bcolors.OKBLUE + '(LOW):' + bcolors.ENDC)
-        hta_paylods()
-        print(bcolors.OKBLUE + '(MEDIUM):' + bcolors.ENDC)
-        pwsh_job()
-        print(bcolors.OKBLUE + '(HIGH):' + bcolors.ENDC)
-        pwsh_file()
-        pwsh_sct()
-        simple_payloads()
-        pwsh_base64()
-        pwsh_base52()
-        print('+' + '-' * 60 + '+')
-        config.PAYLOAD()
-        config.obfuscate()
-        config.STAGER()
-        cspayload()
-        cmd_shellcodex86()
-        cmd_shellcodex64()
-        word_macro()
-        excel_macro()
-        if not config.Donut:
-            console.log("[!] Donut is Disabled so , kindly create a new campaign", style="bold red")
-        else:
-            donut_shellcode()
-            config.migrator()
+    def Make_Payloads(self):  # Not reliable? (May require some more exceptions work)
+        try:
+            console.print("\n[bold italic cyan][-] Creating Payloads..[/bold italic cyan]")
+            """core/config.py"""
+            config.PAYLOAD()
+            config.obfuscate()
+            config.STAGER()
+            config.cspayload()
+            """core/payloads.py"""
+            Create_Payloads()
+        except:
+            """Remove below line if it's affecting the tool (replace with 'pass')"""
+            console.print_exception()
 
     def main(self):
-        self.create_dirs("payloads")
+        """Replace those to a specific directory based on campaign name"""
         self.create_dirs("downloads")
         self.create_dirs("file")
         self.create_dirs("images")
         self.create_dirs("DA")
         self.create_dirs("kerberoast")
-        self.create_dirs("screenshots")
 
         CC = []
         if config.HOST == "" or config.PORT == "":
@@ -113,6 +101,7 @@ class Ninja:
             config.set_ip(CC[0])
 
         """Start webserver"""
+        console.print("[-] Starting WebServer..", style="bold italic cyan")
         server = threading.Thread(target=webserver.main, args=())
         server.start()
         time.sleep(0.5)
@@ -126,7 +115,7 @@ class Ninja:
 
         """Loading webshell if exist"""
         try:
-            console.print("[*] Loading registered webshell list", style="cyan")
+            console.print("\n[-] Loading registered webshell list", style="bold italic cyan")
             with open('.webshells', 'rb') as f:
                 config.WEBSHELLS = pickle.load(f)
         except FileNotFoundError:
@@ -150,15 +139,41 @@ class Ninja:
 
 if __name__ == '__main__':
     try:
-        """Adding arguments, Currently just for q peacefully and quiet startup"""
-        parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, add_help=False)
-        parser.add_argument('-q', '--quiet', help='Disable payload listing at the start')
-        args = parser.parse_args()
         """Create an instance of the class"""
-        ninja = Ninja(args)
+        ninja = Ninja()
         """Display banner"""
         Ninja.Banner()
         """Run Ninja"""
         ninja.main()
     except Exception:
         console.print_exception()
+
+"""
+TODO:
+        * Handle Ctrl+C and Ctrl+D ===> [Done]
+        * Disable verbose output of payloads.. ==> [Done]
+        * Add clear screen option in core/cmd.py ===> [Done]
+        * Try to implement shlex (Needs more testing before implementing) ===> [Done]
+        * Replace pretty tables with rich.tables for a pretty output (Done for help command)
+        * Display listeners in a nicer way [with background colors] -> (Pending...)
+        * Explore and implement default tool colors --> (Pending...)
+        * Make a specific directory for every campaign based on a campaign name (add that option to start_campaign.py)
+        * Add traceback and logging mechanism
+"""
+
+"""
+Help menu to 3 sections
+* main
+* enum
+* dumps
+
+Payloads
+"""
+
+"""
+[+] Before pull request
+delete utils/payloads/ALL-Folders
+delete core/config.py
+delete campaign/DA....
+delete .history
+"""

