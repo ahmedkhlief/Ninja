@@ -3,6 +3,7 @@
 __program__ = "Ninja c2"
 __version__ = "2.0"
 
+from os import mkdir
 import _thread
 import threading
 from shlex import split
@@ -20,12 +21,26 @@ except (ImportError, ImportWarning) as e:
 
 
 class Ninja:
-    def create_dirs(self, dirs):
+    def create_dirs(self):
+        dirs = ["kerberoast", "DA", "images", "file", "downloads"]
         try:
-            name = campaign_name + "/" + dirs
-            os.makedirs(name)
-        except OSError:
-            return
+            """To store payloads"""
+            mkdir("utils/payloads")
+            mkdir("utils/payloads/shellcodes")
+            mkdir("utils/payloads/Macros")
+            mkdir("utils/payloads/Executables")
+            mkdir("utils/payloads/Powershell")
+            mkdir("utils/payloads/Webserver")
+        except FileExistsError:
+            pass
+
+        """Create campaign directories"""
+        try:
+            for directory in dirs:
+                name = campaign_name + "/" + directory
+                os.makedirs(name)
+        except (OSError, FileExistsError):
+            pass
 
     def NinjaCMD(self):
         while True:
@@ -85,12 +100,7 @@ class Ninja:
             console.print_exception()
 
     def main(self):
-        """Replace those to a specific directory based on campaign name"""
-        self.create_dirs("downloads")
-        self.create_dirs("file")
-        self.create_dirs("images")
-        self.create_dirs("DA")
-        self.create_dirs("kerberoast")
+        self.create_dirs()
 
         CC = []
         if config.HOST == "" or config.PORT == "":
@@ -147,33 +157,3 @@ if __name__ == '__main__':
         ninja.main()
     except Exception:
         console.print_exception()
-
-"""
-TODO:
-        * Handle Ctrl+C and Ctrl+D ===> [Done]
-        * Disable verbose output of payloads.. ==> [Done]
-        * Add clear screen option in core/cmd.py ===> [Done]
-        * Try to implement shlex (Needs more testing before implementing) ===> [Done]
-        * Replace pretty tables with rich.tables for a pretty output (Done for help command)
-        * Display listeners in a nicer way [with background colors] -> (Pending...)
-        * Explore and implement default tool colors --> (Pending...)
-        * Make a specific directory for every campaign based on a campaign name (add that option to start_campaign.py)
-        * Add traceback and logging mechanism
-"""
-
-"""
-Help menu to 3 sections
-* main
-* enum
-* dumps
-
-Payloads
-"""
-
-"""
-[+] Before pull request
-delete utils/payloads/ALL-Folders
-delete core/config.py
-delete campaign/DA....
-delete .history
-"""
