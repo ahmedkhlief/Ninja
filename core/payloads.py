@@ -8,6 +8,7 @@ console = Console()
 
 """Create a Directory for forged payloads"""
 try:
+    mkdir("./utils/payloads")
     mkdir("./utils/payloads/shellcodes")
     mkdir("./utils/payloads/Macros")
     mkdir("./utils/payloads/Executables")
