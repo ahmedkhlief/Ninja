@@ -263,8 +263,5 @@ def Create_Payloads():
                 config.migrator()
             except:
                 console.print_exception()
-        """Appending the shellcodes path to list"""
-        config.PAYLOADS.append("\n[bold italic blue][-] Macros and Shellcodes [/ bold italic blue]")
-        config.PAYLOADS.append("[bold red]->[/bold red] view file://./payloads")
     except:
         console.print_exception()
