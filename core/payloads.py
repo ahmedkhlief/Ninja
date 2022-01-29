@@ -6,18 +6,6 @@ from core.config import *
 
 console = Console()
 
-"""Create a Directory for forged payloads"""
-try:
-    mkdir("./utils/payloads")
-    mkdir("./utils/payloads/shellcodes")
-    mkdir("./utils/payloads/Macros")
-    mkdir("./utils/payloads/Executables")
-    mkdir("./utils/payloads/Powershell")
-    mkdir("./utils/payloads/Webserver")
-except FileExistsError:
-    pass
-
-
 def hta_paylods():
     config.PAYLOADS.append("\n[bold italic blue][-] HTA-Payloads[/ bold italic blue]")
     if SSL:
