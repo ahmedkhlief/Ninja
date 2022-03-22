@@ -2,7 +2,7 @@ from core import config
 
 
 def kerb(fname, user, domain):
-    hashfile = f"{config.campaign_name}kerberoast/" + user + "@" + domain + "_hashes"
+    hashfile = f"{config.campaign_name}/kerberoast/" + user + "@" + domain + "_hashes"
     file = open(fname, "r")
     data = file.read()
     data = data.split("############")

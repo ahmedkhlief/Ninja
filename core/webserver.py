@@ -436,7 +436,7 @@ def result():
             return "OK"
         if data.decode("UTF-8").find("Kerberoast-Module") > -1:
             print(data.decode("UTF-8").find("Kerberoast-Module"))
-            fname = f"{campaign_name}kerberoast/" + AGENTS[id][7] + "@" + AGENTS[id][6] + "_kerb_out.txt"
+            fname = f"{campaign_name}/kerberoast/" + AGENTS[id][7] + "@" + AGENTS[id][6] + "_kerb_out.txt"
             k = open(fname, "w")
             k.write(data.decode("UTF-8").replace("\00", " "))
             k.close()
