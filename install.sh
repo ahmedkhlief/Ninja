@@ -1,7 +1,8 @@
-apt-get install python3
-apt-get install python3-pip
-apt-get install mono-devel
-apt-get install nasm
+apt-get update
+apt-get install python3 -y
+apt-get install python3-pip -y
+apt-get install mono-devel -y
+apt-get install nasm -y
 pip3 install pycrypto
 pip3 install cheroot
 pip3 install flask
