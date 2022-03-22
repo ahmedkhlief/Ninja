@@ -5,7 +5,7 @@ import hashlib
 import pickle
 import time
 
-from prettytable import PrettyTable
+#from prettytable import PrettyTable
 from rich.console import Console
 from rich import box
 from rich.live import Live
