@@ -240,6 +240,15 @@ def excel_macro():
     out.close()
     console.log("[green][+] Excel Macro written to:[/green]  [magenta]utils/payloads/Macros/Excel_macro.vba[/magenta]")
 
+def log_oneliners():
+    file=open("utils/payloads/oneliners.txt","w")
+    payloads=""
+    for i in config.PAYLOADS:
+        payloads=payloads+i+"\n"
+    file.write(payloads.replace("[bold red]->[/bold red] "," "))
+    file.close()
+
+
 
 
 def Create_Payloads():
@@ -255,6 +264,7 @@ def Create_Payloads():
         cmd_shellcodex64()
         word_macro()
         excel_macro()
+        log_oneliners()
         if not config.Donut:
             console.log("[!] Donut is Disabled so if you want to use it, kindly create a new campaign", style="bold red")
         else:
