@@ -1,3 +1,10 @@
+# Ninja V2.2 Released ( 27/03/2021 ) .
+New feature including :
+1) new user interface for CnC script
+2) Now each campaign will include all the files related to the campaign and the configuration file.
+3) new script automate AWS instance creation with NinjaC2 configuration. 
+4) Updated Invoke-Mimikatz powershell script to latest Mimikatz release.
+5) Bug Fixes  
 # Ninja V2.1 Released ( 31/07/2021 ) .
 check the new features here : https://shells.systems/ninjac2-v2-1-new-webshell-agent-more-features-and-updated-av-bypass/
 

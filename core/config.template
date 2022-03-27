@@ -10,7 +10,7 @@ from core.Obfuscate import *
 
 campaign_name = '{NAME}'
 PORT = '{PORT}'
-VERSION = '2.0'
+VERSION = '2.2'
 AGENTS = dict()
 COMMAND = dict()
 TIME = dict()
