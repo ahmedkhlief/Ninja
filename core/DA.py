@@ -14,7 +14,7 @@ AV_list = {
     "ESET": ["epfw", "epfwlwf", "epfwwfp"],
     "FireEye Endpoint Agent": ["xagt"],
     "F-Secure": ["fsdevcon", "FSORSPClient"],
-    "MacAfee": ["enterceptagent", "McAfeeEngineService", "McAfeeFramework"],
+    "MacAfee": ["enterceptagent", "McAfeeEngineService", "McAfeeFramework","mcdatrep","McScript_InUse","amupdate"],
     "SentinelOne": ["SentinelAgent", "SentinelOne"],
     "Sophos": ["sophosssp", "sophossps", "ALMon", "ALsvc", "swc_service", "swi_fc", "swi_filter", "swi_service"],
     "ZoneALarm": ["zlclient"],
@@ -23,6 +23,7 @@ AV_list = {
     "Avira": ["avscan"],
     "G data": ["AVKProxy"],
     "Cybereason": ["Cybereason", "CybereasonRansomFree"],
+    "Palo Alto XDR": ["Cyvera", "CyveraConsole","tlaworker"],
 
 }
 
