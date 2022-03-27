@@ -16,7 +16,7 @@ cert = ''
 key = ''
 date = ''
 Dount = ''
-
+name = ''
 
 def campaign_name():
     global name
@@ -169,6 +169,9 @@ def update_template():
         url += f'{k}="{v}"\n'
     template = open("core/config.template", "r")
     config = open("core/config.py", "w")
+    mkdir(name)
+    campaign_config = open(name + "/" + "config.py", "w")
+
     data = template.read()
     data = data.replace('{IP}', IP).replace('{beacon_time}', beacon).replace('{PORT}', PORT).replace('{URL}',
                                                                                                      url).replace(
@@ -176,20 +179,21 @@ def update_template():
                                                                                                      Donut).replace(
         '{NAME}', str(name))
     config.write(data)
+    campaign_config.write(data)
+    campaign_config.close()
     config.close()
     template.close()
 
-
 def banner():
     console.print("""
- ████     ██ ██             ██                      ████ 
+ ████     ██ ██             ██                      ████
 ░██░██   ░██░░             ░░                      █░░░ █
 ░██░░██  ░██ ██ ███████     ██  ██████      █████ ░    ░█
-░██ ░░██ ░██░██░░██░░░██   ░██ ░░░░░░██    ██░░░██   ███ 
-░██  ░░██░██░██ ░██  ░██   ░██  ███████   ░██  ░░   █░░  
-░██   ░░████░██ ░██  ░██ ██░██ ██░░░░██   ░██   ██ █     
+░██ ░░██ ░██░██░░██░░░██   ░██ ░░░░░░██    ██░░░██   ███
+░██  ░░██░██░██ ░██  ░██   ░██  ███████   ░██  ░░   █░░
+░██   ░░████░██ ░██  ░██ ██░██ ██░░░░██   ░██   ██ █
 ░██    ░░███░██ ███  ░██░░███ ░░████████  ░░█████ ░██████
-░░      ░░░ ░░ ░░░   ░░  ░░░   ░░░░░░░░    ░░░░░  ░░░░░░ 
+░░      ░░░ ░░ ░░░   ░░  ░░░   ░░░░░░░░    ░░░░░  ░░░░░░
                                                         [bold cyan]By: Ahmad khlief
                                                         ----------------[/bold cyan]
 \n\n""", style="red")
