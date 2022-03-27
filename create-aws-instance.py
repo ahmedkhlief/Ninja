@@ -8,8 +8,8 @@ import random
 from collections import defaultdict
 from botocore.exceptions import ClientError
 
-aws_key = 'AKIARPAP65UMGDRFQ6NV'
-aws_secret = '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'
+aws_key = ''
+aws_secret = ''
 C2group = 'C2Default'
 Region='us-east-1'
 
