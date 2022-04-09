@@ -131,7 +131,7 @@ def migrator():
 def csobf(str):
     d = ""
     for i in str:
-        d = d + chr((ord(i) + 10) ^ 50)
+        d = d + chr((ord(i)) ^ 45)
     return base64.b64encode(bytearray(d, "UTF-8")).decode("UTF-8")
 
 
