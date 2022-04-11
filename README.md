@@ -1,8 +1,9 @@
 # Ninja V2.2 Released ( 27/03/2021 ) .
 New feature including :
+check URL for more info on features and how to use AWS EC2 automation :
 1) new user interface for CnC script
 2) Now each campaign will include all the files related to the campaign and the configuration file.
-3) new script automate AWS instance creation with NinjaC2 configuration. 
+3) new script automate AWS instance creation with NinjaC2 configuration.
 4) Updated Invoke-Mimikatz powershell script to latest Mimikatz release.
 5) Bug Fixes  
 # Ninja V2.1 Released ( 31/07/2021 ) .
