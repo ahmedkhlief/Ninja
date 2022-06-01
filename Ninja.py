@@ -28,6 +28,7 @@ class Ninja:
             mkdir("utils/payloads")
             mkdir("utils/payloads/shellcodes")
             mkdir("utils/payloads/Macros")
+            mkdir("utils/payloads/Follina")
             mkdir("utils/payloads/Executables")
             mkdir("utils/payloads/Powershell")
             mkdir("utils/payloads/Webserver")
@@ -63,7 +64,10 @@ class Ninja:
                     webshell1 = str(config.WEBSHELLS[config.POINTER][0])
                     webshell2 = config.WEBSHELLS[config.POINTER][1]
                     command = console.input(f'[bold red]({config.BASE} : webshell({webshell1})@{webshell2})[/bold red]')
-                bcommand = split(command)  # split from shlex module
+                try:
+                    bcommand = split(command)  # split from shlex module
+                except:
+                    print("Error with input command")
 
                 if bcommand:
                     if bcommand[0] in cmd.COMMANDS:
