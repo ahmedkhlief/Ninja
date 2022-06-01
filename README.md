@@ -1,4 +1,6 @@
-# Ninja V2.2 Released ( 27/03/2021 ) .
+# Quick Update to include Follina Exploitation ( 01/06/2022 ) - NinjaC2 will generate the document and serve the HTML payload .
+More information : https://www.linkedin.com/posts/ahmed-khlief-499321a7_i-just-pushed-a-quick-update-to-ninjac2-to-activity-6937661951007170560-Tmps
+# Ninja V2.2 Released ( 27/03/2022 ) .
 New feature including :
 check URL for more info on features and how to use AWS EC2 automation :
 1) new user interface for CnC script
