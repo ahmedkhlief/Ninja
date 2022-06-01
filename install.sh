@@ -10,3 +10,5 @@ pip3 install donut-shellcode==0.9.2
 pip3 install pypykatz
 pip3 install tabulate
 pip3 install rich
+pip3 install shutil
+pip3 install pathlib
