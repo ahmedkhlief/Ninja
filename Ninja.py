@@ -16,7 +16,7 @@ try:
     from core.payloads import *
     from core import config
 except (ImportError, ImportWarning) as e:
-    console.print("Error +"+str(e)+"\n### Please run: python3 start_campaign.py", style="bold red")
+    console.print("Module Import Error +"+str(e)+"\n### Make sure you run:./install.sh then start campaign by running : python3 start_campaign.py", style="bold red")
     exit(1)
 
 
