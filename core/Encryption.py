@@ -61,7 +61,7 @@ def encrypt(key, data, gzip=False):
         newlen = len(data) + (16 - mod)
         data = data.ljust(newlen, ' ')
     aes = get_encryption(key, os.urandom(16))
-    data = aes.IV + aes.encrypt(data)
+    data = aes.IV + aes.encrypt(data.encode())
     if not gzip:
         data = base64.b64encode(data)
     return data

