@@ -296,7 +296,7 @@ class cmd:
         if os.path.isdir("Modules"):
             modules = os.listdir("Modules")
             for module in modules:
-                console.print(f"[red]->[/red] Module", style="blue")
+                console.print(f"[red]->[/red] Module %s"%module, style="blue")
         else:
             console.print("[!] Modules directory not Available", style="red")
 
@@ -441,7 +441,7 @@ class cmd:
             return
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey, "load SharpHound.ps1"))
         config.COMMAND[config.get_pointer()].append(encrypt(config.AESKey,
-                                                            "Invoke-BloodHound -CollectionMethod All -NoSaveCache -RandomFilenames -ZipFileName " + "".join(
+                                                            "Invoke-BloodHound -CollectionMethod All -MemCache -ZipFileName " + "".join(
                                                                 [random.choice(string.ascii_uppercase) for i in
                                                                  range(5)])))
 
@@ -708,7 +708,7 @@ class cmd:
         config.WEBSHELL_COUNT = config.WEBSHELL_COUNT + 1
 
     def list_webshells(self, args=None):
-        t = PrettyTable(['id', 'URL', 'KEY'])
+        t = prettytable.PrettyTable(['id', 'URL', 'KEY'])
         for i in config.WEBSHELLS:
             table = config.WEBSHELLS[i]
             # table.insert(0,i)
